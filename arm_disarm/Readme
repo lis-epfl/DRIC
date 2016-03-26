@@ -1,0 +1,6 @@
+This little app is for the future mid-presentation.
+
+It allow to arm/disarm drones with a button. 
+Mutli-client is supported.
+
+->a drone need to be connected, for now only work with emulated-drone
