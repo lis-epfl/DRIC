@@ -17,7 +17,8 @@
       
         $(document).ready(function() {
           var ws = new WebSocket("%(ws_addr)s");
-          var current_x = 0;
+          var current_x = [0,0,0,0];
+          mode = 1
 
           window.onbeforeunload = function(e) {
             $("#chat").val($("#chat").val() + "Bye bye...\n");
@@ -28,16 +29,76 @@
             e.preventDefault();
           };
           ws.onmessage = function (evt) {
-             $("#chat").val(evt.data + " " + current_x.toString() );
+             //$("#chat").val(evt.data + " " + current_x.toString() );
 
-             current_x+=1;
-             var newdata = 
-             { 
-                x : [[current_x]],
-                y : [[parseFloat(evt.data)]]
-             };
+             if (evt.data.substring(0,4) == "mode")
+             {
+               mode = parseInt(evt.data.substring(4,5));
+               return;
+             }
 
-             Plotly.extendTraces('myDiv', newdata, [0], 50);
+             if (mode == 0)
+             {
+              var newdata = 
+               { 
+                  x : [[0]],
+                  y : [[parseFloat(evt.data.substring(2))]],
+               };
+
+             if (evt.data.substring(0,1) == "1")
+              {
+                current_x[0] += 0.1;
+                newdata.x = [[current_x[0] ]];
+                Plotly.extendTraces('myDiv', newdata, [0], 50);
+              }
+              else if (evt.data.substring(0,1) == "2")
+              {
+                current_x[1] += 0.1;
+                newdata.x = [[current_x[1] ]];
+                Plotly.extendTraces('myDiv', newdata, [1], 50);
+              }
+              else if (evt.data.substring(0,1) == "3")
+              {
+                current_x[2] += 0.1;
+                newdata.x = [[current_x[2] ]];
+                Plotly.extendTraces('myDiv', newdata, [2], 50);
+              }
+              else if (evt.data.substring(0,1) == "4")
+              {
+                current_x[3] += 0.1;
+                newdata.x = [[current_x[3] ]];
+                Plotly.extendTraces('myDiv', newdata, [3], 50);
+              }
+              else
+              {
+                return;
+              }
+            }
+            else if (mode == 1)
+            {
+              var mystr = "1:0.123;2:0.1547;3:0.598;4:0.5698"; //test with a define string
+              // var all_var = String(evt.data).split(';');
+
+              var all_var = String(mystr).split(';');
+
+              $("#chat").val(evt.data + "\n\n" + all_var[0] +'   end\n'+ all_var[1]+'   end\n'+ all_var[2]+'   end\n'+ all_var[3]);
+
+              console.log(all_var);
+
+              current_x[0] +=0.1;
+              var trace1 = { 
+                    x : [[current_x[0] ]],
+                    y : [[parseFloat(all_var[0].substring(2))]]
+              };
+
+              var trace2 = {
+                    x : [[current_x[0] ]],
+                    y : [[parseFloat( all_var[1].substring(2))]]
+              };
+
+              Plotly.extendTraces('myDiv', [trace1, trace2], [0,1], 50); //trying to plot only the 2 first plot
+            }
+             
           };
           ws.onopen = function() {
              ws.send("%(username)s entered the room");
@@ -45,11 +106,35 @@
               {
                 x : [[0]],
                 y : [[0]],
-                type: 'scatter'
+                type: 'scatter',
+                marker : {color : 'red'}
               };
 
+              var trace2 = 
+              {
+                x : [[0]],
+                y : [[0]],
+                type: 'scatter',
+                marker : {color : 'blue'}
+              };
+
+              var trace3 = 
+              {
+                x : [[0]],
+                y : [[0]],
+                type: 'scatter',
+                marker : {color : 'green'}
+              };
+
+              var trace4 = 
+              {
+                x : [[0]],
+                y : [[0]],
+                type: 'scatter',
+                marker : {color : 'black'}
+              };
               //var data = [trace1];
-              Plotly.newPlot('myDiv', [trace1]);
+              Plotly.newPlot('myDiv', [trace1, trace2, trace3, trace4]);
           };
           ws.onclose = function(evt) {
              $("#chat").val($("#chat").val() + "Connection closed by server: " + evt.code + " \'" + evt.reason + "\'\n");

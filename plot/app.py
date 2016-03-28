@@ -17,7 +17,8 @@ import random
 import os
 
 import cherrypy
-import time
+import time, threading
+import numpy as np
 
 from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
 from ws4py.websocket import WebSocket
@@ -28,6 +29,8 @@ index_path = os.path.join(cur_dir, 'index.html')
 index_page = file(index_path, 'r').read()
 
 sampling_data = 0
+x=0
+mode = 0 # 0 for sending each after each (slow), 1 for sending all at the same
 
 class ChatWebSocketHandler(WebSocket):
     def received_message(self, m):
@@ -48,46 +51,27 @@ class ChatWebApp(object):
     def ws(self):
         cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
 
-def publish_message(self, attr, m):
+def publish_message():
+    global x
+    x += 0.1
 
-    # global sampling_data;
+    if mode == 0:
+        cherrypy.engine.publish('websocket-broadcast', TextMessage('1:'+str(np.sin(x))))
+        cherrypy.engine.publish('websocket-broadcast', TextMessage('2:'+str(np.sin(x+np.pi/2))))
+        cherrypy.engine.publish('websocket-broadcast', TextMessage('3:'+str(np.sin(x+np.pi))))
+        cherrypy.engine.publish('websocket-broadcast', TextMessage('4:'+str(np.sin(x+np.pi*3/2))))
 
-    # if sampling_data < 10 :
-    #     sampling_data = sampling_data + 1
-    #     return
-    # else:
-    #     sampling_data = 0
+        threading.Timer(0.320, publish_message).start()
 
-    # t = time.localtime()
-    msg = str(m)
-    #print 'sent : ' + msg + 'at'
-    cherrypy.engine.publish('websocket-broadcast', TextMessage(msg))
+    elif mode == 1:
+        msg = '1:'+str(np.sin(x))+';2:'+str(np.sin(x+np.pi/2))+';3:'+str(np.sin(x+np.pi))+';4:'+str(np.sin(x+np.pi*3/2))
+        cherrypy.engine.publish('websocket-broadcast', msg)
 
-def getTime():
-    from datetime import datetime
+        threading.Timer(0.080, publish_message).start()
 
-    dt = datetime.now()
+def publish_mode():
+    cherrypy.engine.publish('websocket-broadcast', TextMessage('mode'+str(mode)))
 
-    if dt.hour < 10:
-        ret = ret + '0'
-    ret = str(dt.hour) + 'h'
-
-    if dt.minute < 10:
-        ret = ret + '0'
-    ret = ret + str(dt.minute) + 'min'
-
-    if dt.second < 10:
-        ret = ret + '0'
-    ret = ret + str(dt.second) + "."
-
-    if int(dt.microsecond/1000) < 10:
-        ret = ret + '00'
-    elif int(dt.microsecond/1000) < 100:
-        ret = ret + '0'
-
-    ret = ret + str(int(dt.microsecond / 1000))
-
-    return ret
 
 def getIpAdress():
     import socket
@@ -112,8 +96,9 @@ if __name__ == '__main__':
     vehicle = dronekit.connect("udp:localhost:14550")
 
     # add call back when receive an heartbeat
-    vehicle.add_attribute_listener('last_heartbeat', publish_message)
-
+    #vehicle.add_attribute_listener('last_heartbeat', publish_message)
+    threading.Timer(2, publish_mode).start()
+    publish_message()
 
     #cherrypy stuff
     cherrypy.config.update({'server.socket_host' : getIpAdress(),
