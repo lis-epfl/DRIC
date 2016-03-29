@@ -30,7 +30,7 @@ index_page = file(index_path, 'r').read()
 
 sampling_data = 0
 x=0
-mode = 0 # 0 for sending each after each (slow), 1 for sending all at the same
+mode = 1 # 0 for sending each after each (slow), 1 for sending all at the same
 
 class ChatWebSocketHandler(WebSocket):
     def received_message(self, m):
@@ -93,11 +93,11 @@ if __name__ == '__main__':
     import dronekit
 
     # LEquad must be launch for the folowing line
-    vehicle = dronekit.connect("udp:localhost:14550")
+    # vehicle = dronekit.connect("udp:localhost:14550")
 
     # add call back when receive an heartbeat
-    #vehicle.add_attribute_listener('last_heartbeat', publish_message)
-    threading.Timer(2, publish_mode).start()
+    # vehicle.add_attribute_listener('last_heartbeat', publish_message)
+    # threading.Timer(2, publish_mode).start()
     publish_message()
 
     #cherrypy stuff
