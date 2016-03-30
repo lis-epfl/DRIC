@@ -86,10 +86,9 @@ def getIpAdress():
 class WebSocketHandler(WebSocket):
     def received_message(self, m):
         print 'message sent by someone : ' + m.data
-        cherrypy.engine.publish('websocket-broadcast', m)
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
-        cherrypy.engine.publish('websocket-broadcast', TextMessage(reason))
+        print 'deconnexion of a client, reason :', reason
 
 
 class Cherrypy_server(object):

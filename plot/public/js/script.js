@@ -15,6 +15,7 @@ $(document).ready(function() {
 
     ws.onmessage = function (evt) 
     {
+        console.log(evt.data);
         var all_var = String(evt.data).split(';');
 
         current_x[0] += 0.1;
