@@ -146,7 +146,11 @@ if __name__ == '__main__':
     import dronekit
 
     # LEquad must be launch for the folowing line
-    vehicle = dronekit.connect("udp:localhost:14550")
+    # vehicle = dronekit.connect("udp:localhost:14550")
+
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
+
+    vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     # add call back when receive an heartbeat
     # vehicle.add_attribute_listener('last_heartbeat', publish_message)
