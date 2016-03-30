@@ -49,19 +49,19 @@ class ChatWebSocketHandler(WebSocket):
             if new_isarmed != isarmed:
                 print 'error : cannot change arm state'
 
-            # arm state is automatically sent by an arm call_back         
+            # arm state is automatically sent by an arm call_back
 
 
         elif m.data == "client:get:arm":
             send_arm_state()
 
-        elif m.data == "client:state:arm":
-            if vehicle.armed == False: 
-                send_arm_state() #rectification of the client state
-
-        elif m.data == "client:state:unarm":
-            if vehicle.armed == True:
-                send_arm_state() #rectification of the client state
+        # elif m.data == "client:state:arm":
+        #     if vehicle.armed == False:
+        #         send_arm_state() #rectification of the client state
+        #
+        # elif m.data == "client:state:unarm":
+        #     if vehicle.armed == True:
+        #         send_arm_state() #rectification of the client state
 
     def closed(self, code, reason="A client left the room without a proper explanation."): #when someone close the connection
         print('websocket-broadcast', TextMessage(reason))
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         'server.socket_host': '0.0.0.0',
         'server.socket_port': 9000
     })
-    
+
     WebSocketPlugin(cherrypy.engine).subscribe()
     cherrypy.tools.websocket = WebSocketTool()
 
@@ -189,5 +189,5 @@ if __name__ == '__main__':
 # 5. if c->s "client:get:arm"         request info     : want to know if arm or not, expecting answer type 1 or 2
 # 6. if c->s "client:state:arm"       send info        : for client, drone is armed
 # 7. if c->s "client:state:unarm"     send info        : for client, drone is not armed
-# 
+#
 # TODO : error code

@@ -35,23 +35,23 @@
         // 5. if c->s "client:get:arm"         request info     : want to know if arm or not, expecting answer type 1 or 2
         // 6. if c->s "client:state:arm"       send info        : for client, drone is armed
         // 7. if c->s "client:state:unarm"     send info        : for client, drone is not armed
-      
+
         $(document).ready(function() {
           var ws = new WebSocket("%(ws_addr)s");
           var button_state = "unarm";
 
-          window.onbeforeunload = function(e) 
+          window.onbeforeunload = function(e)
           {
             alert('here weird stuff');
             ws.close(1000, "");
 
-            if(!e) 
+            if(!e)
               e = window.event;
             e.stopPropagation();
             e.preventDefault();
           };
 
-          ws.onmessage = function (evt) 
+          ws.onmessage = function (evt)
           {  //when receving something
 
             if (evt.data == "server:state:arm")
@@ -64,31 +64,31 @@
               document.getElementById("send").childNodes[0].nodeValue="Arm";
               button_state = "arm";
             }
-            else if (evt.data == "server:get:arm")
-            {
-              if (button_state == "arm")
-                ws.send("client:state:arm");
-              else
-                ws.send("client:state:unarm");
-            }
+            // else if (evt.data == "server:get:arm")
+            // {
+            //   if (button_state == "arm")
+            //     ws.send("client:state:arm");
+            //   else
+            //     ws.send("client:state:unarm");
+            // }
 
              // alert('receive message : ' + evt.data);
           };
 
-          ws.onopen = function() 
-          { //when opening the client, check 
+          ws.onopen = function()
+          { //when opening the client, check
            if (button_state == "arm")
               ws.send("client:state:arm");
             else
               ws.send("client:state:unarm");
           };
 
-          ws.onclose = function(evt) 
+          ws.onclose = function(evt)
           { //when closing client
-             
+
           };
 
-           $("#send").click(function() 
+           $("#send").click(function()
            { //when guy click on the button
              ws.send("client:arm:switch");
 
