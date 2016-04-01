@@ -1,14 +1,16 @@
 
-    ### import ###
+### import ###
 
 # system lib
-import os, os.path
+import os
+import os.path
 import socket
 
 # basic lib
 import random
 import string
-import time, threading
+import time
+import threading
 import numpy as np
 
 # cherrypy lib
@@ -22,52 +24,53 @@ from ws4py.messaging import TextMessage
 # drone lib
 import dronekit
 
-
-    ### global var ###
+### global var ###
 
 global IP_adr
 global vehicle
 x = 0
 trace = ['BIAS_ACC_X', 'BIAS_ACC_Y', 'BIAS_ACC_Z', 'BIAS_GYRO_X']
 
+# usefull function
 
-    ### usefull function
 
 def main():
-    IP_adr = getIpAdress() 
+    IP_adr = getIpAdress()
 
     WebSocketPlugin(cherrypy.engine).subscribe()
     cherrypy.tools.websocket = WebSocketTool()
 
-    cherrypy.config.update({'server.socket_host' : IP_adr,
+    cherrypy.config.update({'server.socket_host': IP_adr,
                             'server.socket_port': 8080})
 
-    vehicle = dronekit.connect("udp:localhost:14550") # for local simulated drone
+    # for local simulated drone
+    vehicle = dronekit.connect("udp:localhost:14550")
     # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     publish_message(vehicle)
 
     conf = {
-        '/': 
+        '/':
         {
             'tools.sessions.on': True,
             'tools.staticdir.root': os.path.abspath(os.getcwd())
         },
 
-        '/ws': 
+        '/ws':
         {
             'tools.websocket.on': True,
             'tools.websocket.handler_cls': WebSocketHandler
         },
 
-        '/static': 
+        '/static':
         {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './public'
         }
     }
     cherrypy.quickstart(Cherrypy_server(), '/', conf)
+
 
 def publish_message(vehicle):
     global x
@@ -80,26 +83,28 @@ def publish_message(vehicle):
     # trace1 ; trace2 ; trace3 ; trace4
 
     msg = ''
-    msg += str(vehicle.attitude.pitch) + ';' 
-    msg += str(vehicle.attitude.roll) + ';' 
+    msg += str(vehicle.attitude.pitch) + ';'
+    msg += str(vehicle.attitude.roll) + ';'
     msg += str(vehicle.attitude.yaw)
 
     cherrypy.engine.publish('websocket-broadcast', msg)
 
     threading.Timer(0.100, publish_message, [vehicle]).start()
 
+
 def getIpAdress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("gmail.com",80))
+    s.connect(("gmail.com", 80))
     ip = s.getsockname()[0]
     s.close()
 
-    return ip;
-
+    return ip
 
     ### classes definition ###
 
+
 class WebSocketHandler(WebSocket):
+
     def received_message(self, m):
         print 'message sent by someone : ' + m.data
 
@@ -108,6 +113,7 @@ class WebSocketHandler(WebSocket):
 
 
 class Cherrypy_server(object):
+
     @cherrypy.expose
     def index(self):
         return file('public/html/index.html', 'r').read() % {'WS_ADR_GET': 'ws://' + getIpAdress() + ':8080/ws'}

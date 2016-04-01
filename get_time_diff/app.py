@@ -1,18 +1,4 @@
 # -*- coding: utf-8 -*-
-__doc__ = """
-A simple chat example using a CherryPy webserver.
-
-$ pip install cherrypy
-
-Then run it as follow:
-
-$ python app.py
-
-You will want to edit this file to change the
-ws_addr variable used by the websocket object to connect
-to your endpoint. Probably using the actual IP
-address of your machine.
-"""
 import random
 import os
 
@@ -27,6 +13,7 @@ cur_dir = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 index_path = os.path.join(cur_dir, 'index.html')
 index_page = file(index_path, 'r').read()
 
+
 class ChatWebSocketHandler(WebSocket):
     def received_message(self, m):
         print 'message sent by someone : ' + m.data
@@ -34,6 +21,7 @@ class ChatWebSocketHandler(WebSocket):
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
         cherrypy.engine.publish('websocket-broadcast', TextMessage(reason))
+
 
 class ChatWebApp(object):
     @cherrypy.expose
@@ -46,11 +34,13 @@ class ChatWebApp(object):
     def ws(self):
         cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
 
+
 def publish_message(self, attr, m):
     t = time.localtime()
     msg = str(m)
-    #print 'sent : ' + msg + 'at'
+    # print 'sent : ' + msg + 'at'
     cherrypy.engine.publish('websocket-broadcast', TextMessage(getTime()))
+
 
 def getTime():
     from datetime import datetime
@@ -78,20 +68,21 @@ def getTime():
 
     return ret
 
+
 def getIpAdress():
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("gmail.com",80))
+    s.connect(("gmail.com", 80))
     ip = s.getsockname()[0]
     s.close()
-    return ip;
+    return ip
 
 if __name__ == '__main__':
     cherrypy.config.update({
         'server.socket_host': '0.0.0.0',
         'server.socket_port': 9000
     })
-    
+
     WebSocketPlugin(cherrypy.engine).subscribe()
     cherrypy.tools.websocket = WebSocketTool()
 
@@ -103,9 +94,8 @@ if __name__ == '__main__':
     # add call back when receive an heartbeat
     vehicle.add_attribute_listener('last_heartbeat', publish_message)
 
-
-    #cherrypy stuff
-    cherrypy.config.update({'server.socket_host' : getIpAdress(),
+    # cherrypy stuff
+    cherrypy.config.update({'server.socket_host': getIpAdress(),
                             'server.socket_port': 9000})
 
     conf = {

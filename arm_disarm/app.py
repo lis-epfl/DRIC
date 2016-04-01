@@ -1,18 +1,4 @@
 # -*- coding: utf-8 -*-
-__doc__ = """
-A simple chat example using a CherryPy webserver.
-
-$ pip install cherrypy
-
-Then run it as follow:
-
-$ python app.py
-
-You will want to edit this file to change the
-ws_addr variable used by the websocket object to connect
-to your endpoint. Probably using the actual IP
-address of your machine.
-"""
 import random
 import os
 
@@ -29,8 +15,9 @@ index_page = file(index_path, 'r').read()
 
 sampling_data = 0
 
+
 class ChatWebSocketHandler(WebSocket):
-    def received_message(self, m): #when a message is sent by the client
+    def received_message(self, m):  # when a message is sent by the client
         print 'receive : ' + m.data
 
         if m.data == "client:arm:switch":
@@ -51,7 +38,6 @@ class ChatWebSocketHandler(WebSocket):
 
             # arm state is automatically sent by an arm call_back
 
-
         elif m.data == "client:get:arm":
             send_arm_state()
 
@@ -63,13 +49,14 @@ class ChatWebSocketHandler(WebSocket):
         #     if vehicle.armed == True:
         #         send_arm_state() #rectification of the client state
 
-    def closed(self, code, reason="A client left the room without a proper explanation."): #when someone close the connection
+    def closed(self, code, reason="A client left the room without a proper explanation."):  # when someone close the connection
         print('websocket-broadcast', TextMessage(reason))
         # nothing else
 
+
 class ChatWebApp(object):
     @cherrypy.expose
-    def index(self): # configuration
+    def index(self):  # configuration
         return index_page % {'username': "User%d" % random.randint(50, 1000),
                              # 'ws_addr': 'ws://localhost:9000/ws'}
                              'ws_addr': 'ws://' + getIpAdress() + ':9000/ws'}
@@ -79,7 +66,7 @@ class ChatWebApp(object):
         cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
 
 
-def publish_message(self, attr, m): #send a message
+def publish_message(self, attr, m):  # send a message
     cherrypy.engine.publish('websocket-broadcast', TextMessage(msg))
 
 
@@ -90,15 +77,17 @@ def send_arm_state():
     else:
         cherrypy.engine.publish('websocket-broadcast', TextMessage("server:state:unarm"))
 
+
 def wait_for_new_heartbeat(my_vehicle):
     the_time = 0
-    while my_vehicle.last_heartbeat >= the_time :
+    while my_vehicle.last_heartbeat >= the_time:
         the_time = my_vehicle.last_heartbeat
 
 
 def arm_callback(self, attr, m):
     # print 'arm_callback:' + str(m)
     send_arm_state()
+
 
 def getTime():
     from datetime import datetime
@@ -126,13 +115,14 @@ def getTime():
 
     return ret
 
+
 def getIpAdress():
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("gmail.com",80))
+    s.connect(("gmail.com", 80))
     ip = s.getsockname()[0]
     s.close()
-    return ip;
+    return ip
 
 if __name__ == '__main__':
     cherrypy.config.update({
@@ -146,18 +136,18 @@ if __name__ == '__main__':
     import dronekit
 
     # LEquad must be launch for the folowing line
-    # vehicle = dronekit.connect("udp:localhost:14550")
+    vehicle = dronekit.connect("udp:localhost:14550")
 
-    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
+    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
 
-    vehicle.parameters['COM_RC_IN_MODE'] = 2;
+    vehicle.parameters['COM_RC_IN_MODE'] = 2
 
     # add call back when receive an heartbeat
     # vehicle.add_attribute_listener('last_heartbeat', publish_message)
     vehicle.add_attribute_listener('armed', arm_callback)
 
-    #cherrypy stuff
-    cherrypy.config.update({'server.socket_host' : getIpAdress(),
+    # cherrypy stuff
+    cherrypy.config.update({'server.socket_host': getIpAdress(),
                             'server.socket_port': 9000})
 
     conf = {

@@ -1,14 +1,15 @@
-
-    ### import ###
+#    ### import ###
 
 # system lib
-import os, os.path
+import os
+import os.path
 import socket
 
 # basic lib
 import random
 import string
-import time, threading
+import time
+import threading
 import numpy as np
 
 # cherrypy lib
@@ -23,7 +24,7 @@ from ws4py.messaging import TextMessage
 import dronekit
 
 
-    ### global var ###
+#    ### global var ###
 
 global IP_adr
 global vehicle
@@ -31,43 +32,45 @@ x = 0
 trace = ['BIAS_ACC_X', 'BIAS_ACC_Y', 'BIAS_ACC_Z', 'BIAS_GYRO_X']
 
 
-    ### usefull function
+#    ### usefull function
 
 def main():
-    IP_adr = getIpAdress() 
+    IP_adr = getIpAdress()
 
     WebSocketPlugin(cherrypy.engine).subscribe()
     cherrypy.tools.websocket = WebSocketTool()
 
-    cherrypy.config.update({'server.socket_host' : IP_adr,
+    cherrypy.config.update({'server.socket_host': IP_adr,
                             'server.socket_port': 8080})
 
-    vehicle = dronekit.connect("udp:localhost:14550") # for local simulated drone
+    # for local simulated drone
+    vehicle = dronekit.connect("udp:localhost:14550")
     # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     publish_message(vehicle)
 
     conf = {
-        '/': 
+        '/':
         {
             'tools.sessions.on': True,
             'tools.staticdir.root': os.path.abspath(os.getcwd())
         },
 
-        '/ws': 
+        '/ws':
         {
             'tools.websocket.on': True,
             'tools.websocket.handler_cls': WebSocketHandler
         },
 
-        '/static': 
+        '/static':
         {
             'tools.staticdir.on': True,
             'tools.staticdir.dir': './public'
         }
     }
     cherrypy.quickstart(Cherrypy_server(), '/', conf)
+
 
 def publish_message(vehicle):
     global x
@@ -81,36 +84,40 @@ def publish_message(vehicle):
 
     msg = ''
 
-    for i in range(4) :
-        msg += str(vehicle.parameters[trace[i]]) + ';' 
+    for i in range(4):
+        msg += str(vehicle.parameters[trace[i]]) + ';'
 
-    cherrypy.engine.publish('websocket-broadcast', msg[:-1] )
+    cherrypy.engine.publish('websocket-broadcast', msg[:-1])
 
     threading.Timer(0.100, publish_message, [vehicle]).start()
 
+
 def getIpAdress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("gmail.com",80))
+    s.connect(("gmail.com", 80))
     ip = s.getsockname()[0]
     s.close()
 
-    return ip;
+    return ip
 
 
-    ### classes definition ###
+#    ### classes definition ###
+
 
 class WebSocketHandler(WebSocket):
+
     def received_message(self, m):
         print 'message sent by someone : ' + m.data
 
         if m.data[:16] == "CLIENT:ASK:TRACE" and len(m.data) > 19:
-            trace[int(m.data[16])-1] = m.data[18:]
+            trace[int(m.data[16]) - 1] = m.data[18:]
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print 'deconnexion of a client, reason :', reason
 
 
 class Cherrypy_server(object):
+
     @cherrypy.expose
     def index(self):
         return file('public/html/index.html', 'r').read() % {'WS_ADR_GET': 'ws://' + getIpAdress() + ':8080/ws'}
