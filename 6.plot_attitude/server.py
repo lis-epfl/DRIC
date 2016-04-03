@@ -1,5 +1,5 @@
 
-### import ###
+#   ### import ###
 
 # system lib
 import os
@@ -24,12 +24,11 @@ from ws4py.messaging import TextMessage
 # drone lib
 import dronekit
 
-### global var ###
+#   ### global var ###
 
 global IP_adr
 global vehicle
 x = 0
-trace = ['BIAS_ACC_X', 'BIAS_ACC_Y', 'BIAS_ACC_Z', 'BIAS_GYRO_X']
 
 # usefull function
 
@@ -100,7 +99,7 @@ def getIpAdress():
 
     return ip
 
-    ### classes definition ###
+#   ### classes definition ###
 
 
 class WebSocketHandler(WebSocket):

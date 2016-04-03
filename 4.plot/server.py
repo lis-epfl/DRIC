@@ -1,5 +1,5 @@
 
-### import ###
+#   ### import ###
 
 # system lib
 import os
@@ -24,7 +24,7 @@ from ws4py.messaging import TextMessage
 # drone lib
 import dronekit
 
-### global var ###
+#   ### global var ###
 
 global IP_adr
 x = 0
@@ -85,7 +85,7 @@ def getIpAdress():
 
     return ip
 
-    ### classes definition ###
+#   ### classes definition ###
 
 
 class WebSocketHandler(WebSocket):
