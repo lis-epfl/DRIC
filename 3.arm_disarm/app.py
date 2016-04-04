@@ -21,14 +21,15 @@ class ChatWebSocketHandler(WebSocket):
         print 'receive : ' + m.data
 
         if m.data == "client:arm:switch":
-            wait_for_new_heartbeat(vehicle)
+            # wait_for_new_heartbeat(vehicle)
+            vehicle.commands.upload()
 
             isarmed = vehicle.armed
 
             # change vehicle arm state
             isarmed = not isarmed
             vehicle.armed = isarmed
-            wait_for_new_heartbeat(vehicle)
+            vehicle.commands.upload()
 
             # check if state has changed
             new_isarmed = vehicle.armed
@@ -136,11 +137,11 @@ if __name__ == '__main__':
     import dronekit
 
     # LEquad must be launch for the folowing line
-    vehicle = dronekit.connect("udp:localhost:14550")
+    # vehicle = dronekit.connect("udp:localhost:14550")
 
-    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
 
-    vehicle.parameters['COM_RC_IN_MODE'] = 2
+    # vehicle.parameters['COM_RC_IN_MODE'] = 2
 
     # add call back when receive an heartbeat
     # vehicle.add_attribute_listener('last_heartbeat', publish_message)
