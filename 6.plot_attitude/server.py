@@ -43,8 +43,8 @@ def main():
                             'server.socket_port': 8080})
 
     # for local simulated drone
-    vehicle = dronekit.connect("udp:localhost:14550")
-    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
+    # vehicle = dronekit.connect("udp:localhost:14550")
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     publish_message(vehicle)
@@ -88,7 +88,7 @@ def publish_message(vehicle):
 
     cherrypy.engine.publish('websocket-broadcast', msg)
 
-    threading.Timer(0.100, publish_message, [vehicle]).start()
+    threading.Timer(0.080, publish_message, [vehicle]).start()
 
 
 def getIpAdress():
