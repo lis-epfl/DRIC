@@ -1,0 +1,42 @@
+<html>
+    <head>
+
+      <!-- css -->
+
+      <link href="/static/css/style.css" rel="stylesheet">
+
+
+      <script type="application/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+      <script type="application/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+      <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+      <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+      <style>
+        body { padding-top: 20px; padding-bottom: 20px; background-color: #333; color: #fff; }
+      </style>
+
+      <!-- js script -->
+
+      <script>
+        var wr_adr = "%(WS_ADR_GET)s";
+      </script>
+
+      <script src="/static/js/script.js"></script>
+
+    </head>
+
+    <body>
+
+        <!-- button 'arm' -->
+        <button id="send" type="submit" class="btn btn-primary center-block" width="200" height="1500">Arm</button>
+
+        <!-- checkbox -->
+
+        <input name="to_show_graph" id="show_graph" type="checkbox">
+        <br>
+
+        <!-- graph plotly -->
+       <div id="myDiv"></div>
+
+    </body>
+</html>
