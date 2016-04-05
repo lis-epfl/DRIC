@@ -11,6 +11,8 @@
       <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
       <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
       <style>
         body { padding-top: 20px; padding-bottom: 20px; background-color: #333; color: #fff; }
       </style>
@@ -27,16 +29,24 @@
 
     <body>
 
-        <!-- button 'arm' -->
-        <button id="send" type="submit" class="btn btn-primary center-block" width="200" height="1500">Arm</button>
+        <div class="container">
+            <div class="row">
 
-        <!-- checkbox -->
+                <div class="col-lg-6">
+                    <!-- button 'arm' -->
+                    <button id="send" type="submit" class="btn btn-primary btn-block center-block">Arm</button>
+                </div>
 
-        <input name="to_show_graph" id="show_graph" type="checkbox">
-        <br>
+                <div class="col-lg-6">
+                    <!-- checkbox -->
+                    <input name="to_show_graph" id="show_graph" type="checkbox">
+                    <br>
+                    <!-- graph plotly -->
+                    <div id="myDiv"></div>
+                </div>
 
-        <!-- graph plotly -->
-       <div id="myDiv"></div>
+            </div>
+        </div>
 
     </body>
 </html>
