@@ -41,7 +41,7 @@ $(document).ready(function()
         }
         else if (evt.data == "server:state:arm")
         {
-            document.getElementById("send").childNodes[0].nodeValue="Unarm";
+            document.getElementById("send").childNodes[0].nodeValue="Disarm";
             button_state = "unarm";
         }
         else if (evt.data == "server:state:unarm")

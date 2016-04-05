@@ -44,10 +44,12 @@ def main():
                             'server.socket_port': 8080})
 
     # for local simulated drone
-    vehicle = dronekit.connect("udp:localhost:14550", rate=20)
-    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
+    # vehicle = dronekit.connect("udp:localhost:14550", rate=20)
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
+    print 'drone found, waiting ready'
+    vehicle.wait_ready()
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
-    print 'ok'
+
     vehicle.add_attribute_listener('armed', arm_callback)
     publish_message()
 
