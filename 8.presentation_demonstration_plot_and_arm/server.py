@@ -79,8 +79,6 @@ def publish_message():
     global x, vehicle
     x += 0.1
 
-    # msg = str(2*np.sin(x))+';'+str(2*(np.sin(x+np.pi/2)))+';'+str(2*(np.sin(x+np.pi)))+';'+str(2*(np.sin(x+np.pi*3/2)))
-
     # trace format example :
     # plot:156.096;765.9866;739.0985;34.97
     #      trace1 ; trace2 ; trace3 ; trace4
@@ -144,6 +142,7 @@ class WebSocketHandler(WebSocket):
 
             if vehicle.armed != isarmed:
                 print 'error : cannot change arm state, timout after 5 seconds'
+                send_arm_state()
 
         elif m.data == "client:get:arm":
             send_arm_state()

@@ -77,7 +77,13 @@ $(document).ready(function()
             name : 'Yaw'
         }];
 
-        Plotly.newPlot('myDiv', data, {showLink: false});
+        layout = 
+        {
+            showLink: false,
+            showlegend: true,
+        };
+
+        Plotly.newPlot('myDiv', data, layout);
     };
 
     ws.onclose = function(evt) //when the client is closing
@@ -110,20 +116,6 @@ $(document).ready(function()
         }
     });
 
-    // $('#show_graph').click(function() 
-    // {
-    //     var $this = $(this);
-    //     // $this will contain a reference to the checkbox   
-    //     if ($this.is(':checked')) 
-    //     {
-    //         document.getElementById('myDiv').style.visibility = 'visible';
-    //     } 
-    //     else 
-    //     {
-    //         document.getElementById('myDiv').style.visibility = 'hidden';
-    //     }
-    // });
-
     window.onresize = function() {
         // Plotly.Plots.resize('myDiv');
         var width_ = window.innerWidth || 
@@ -133,8 +125,6 @@ $(document).ready(function()
         var height_ = window.innerHeight || 
                       document.documentElement.clientHeight|| 
                       document.body.clientHeight;
-
-        // alert('resize' + String(width) + " " + String(height));
 
         var update = 
         {
