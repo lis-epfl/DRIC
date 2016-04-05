@@ -1,8 +1,9 @@
-      
+
 $(document).ready(function() 
 {
     var ws = new WebSocket(wr_adr);
     var current_x = [0,0,0];
+    var plot_visible = false;
 
     window.onbeforeunload = function(e) 
     {
@@ -42,12 +43,10 @@ $(document).ready(function()
         else if (evt.data == "server:state:arm")
         {
             document.getElementById("send").childNodes[0].nodeValue="Disarm";
-            button_state = "unarm";
         }
         else if (evt.data == "server:state:unarm")
         {
             document.getElementById("send").childNodes[0].nodeValue="Arm";
-            button_state = "arm";
         }
     };
 
@@ -87,25 +86,62 @@ $(document).ready(function()
     };
 
     $("#send").click(function()
-    { //when guy click on the button
-        ws.send("client:arm:switch");
-
-        // alert("click action");
-
-        return false;
+    {
+        if (document.getElementById("send").childNodes[0].nodeValue != "Loading")
+        {
+            ws.send("client:arm:switch");
+            document.getElementById("send").childNodes[0].nodeValue = "Loading";
+        }
     });
 
-    $('#show_graph').click(function() 
+    $("#show_plot").click(function()
     {
-        var $this = $(this);
+
         // $this will contain a reference to the checkbox   
-        if ($this.is(':checked')) 
+        if (plot_visible) 
         {
-            document.getElementById('myDiv').style.visibility = 'visible';
+            document.getElementById('myDiv').style.visibility = 'hidden';
+            plot_visible = false;
         } 
         else 
         {
-            document.getElementById('myDiv').style.visibility = 'hidden';
+            document.getElementById('myDiv').style.visibility = 'visible';
+            plot_visible = true;
         }
     });
+
+    // $('#show_graph').click(function() 
+    // {
+    //     var $this = $(this);
+    //     // $this will contain a reference to the checkbox   
+    //     if ($this.is(':checked')) 
+    //     {
+    //         document.getElementById('myDiv').style.visibility = 'visible';
+    //     } 
+    //     else 
+    //     {
+    //         document.getElementById('myDiv').style.visibility = 'hidden';
+    //     }
+    // });
+
+    window.onresize = function() {
+        // Plotly.Plots.resize('myDiv');
+        var width_ = window.innerWidth || 
+                     document.documentElement.clientWidth || 
+                     document.body.clientWidth;
+
+        var height_ = window.innerHeight || 
+                      document.documentElement.clientHeight|| 
+                      document.body.clientHeight;
+
+        // alert('resize' + String(width) + " " + String(height));
+
+        var update = 
+        {
+            width: width_ * 0.80 //20% free on each side of the graph
+        };
+
+        Plotly.relayout('myDiv', update);
+
+    };
 });

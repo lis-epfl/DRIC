@@ -24,19 +24,3 @@ body
     /*hide at the beginning*/
     visibility:hidden;
 }
-
-#show_graph
-{
-	/*horizontally center*/
-	display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#show_graph_label
-{
-	/*horizontally center*/
-	display: block;
-    margin-left: auto;
-    margin-right: auto;
-} 
