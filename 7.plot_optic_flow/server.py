@@ -46,9 +46,9 @@ def handle_of(self, name, msg):
         i = 60 * step
         j = 60 * (step + 1)
         of[i:j] = msg.data
-        # print(of)
 
-        # if step == 4:
+        if step == 4:
+            print(of)
         #     publish_message(self)
 
 def main():
@@ -64,11 +64,10 @@ def main():
     dronekit.mavutil.set_dialect('mavric')
 
     # for local simulated drone
-    vehicle = dronekit.connect("udp:localhost:14550",
-                                rate=100)
+    # vehicle = dronekit.connect("udp:localhost:14550", rate=100)
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=100)
     vehicle.add_message_listener('BIG_DEBUG_VECT', handle_of)
 
-    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600)
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     publish_message(vehicle)
@@ -99,15 +98,15 @@ def publish_message(vehicle):
     msg = {
         'data': [{
                     't':of_loc,
-                    'r':of,
+                    'r':np.abs(of),
                     'type': 'markers'
                 }],
         'layout':{
                     'title': 'Optic Flow',
-                    'radialaxis': { 'range': [0, 10] }
+                    'radialaxis': { 'range': [0, 1000] }
                  }
     }
-
+    # print(of)
     json_msg = json.dumps(msg, cls=plotly.utils.PlotlyJSONEncoder)
 
     cherrypy.engine.publish('websocket-broadcast', json_msg)
