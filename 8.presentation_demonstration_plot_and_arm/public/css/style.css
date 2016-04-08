@@ -24,3 +24,13 @@ body
     /*hide at the beginning*/
     visibility:hidden;
 }
+
+#IP_label
+{
+	/*horizontally center*/
+    display: block;
+    text-align: center;
+    line-height: 150%;
+
+    font-size: 3.00em;
+}

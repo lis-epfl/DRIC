@@ -6,6 +6,9 @@ import os
 import os.path
 import socket
 
+# internet lib
+import urllib2
+
 # basic lib
 import random
 import string
@@ -26,7 +29,6 @@ import dronekit
 
 #   ### global var ###
 
-global IP_adr
 # global vehicle
 x = 0
 
@@ -34,7 +36,12 @@ x = 0
 
 
 def main():
-    global vehicle
+    global vehicle, IP_adr
+
+    if not internet_on():
+        print 'no internet connection'
+        exit()
+
     IP_adr = getIpAdress()
 
     WebSocketPlugin(cherrypy.engine).subscribe()
@@ -43,9 +50,9 @@ def main():
     cherrypy.config.update({'server.socket_host': IP_adr,
                             'server.socket_port': 8080})
 
-    # for local simulated drone
-    vehicle = dronekit.connect("udp:localhost:14550", rate=20)
-    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
+    
+    # vehicle = dronekit.connect("udp:localhost:14550", rate=20)    # for local simulated drone
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
     print 'drone found, waiting ready'
     vehicle.wait_ready()
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
@@ -101,6 +108,14 @@ def getIpAdress():
 
     return ip
 
+def internet_on():
+        try:
+            response=urllib2.urlopen('http://gmail.com',timeout=1)
+            return True
+        except urllib2.URLError as err:
+            pass
+
+        return False
 
 def send_arm_state():
     global vehicle
@@ -109,6 +124,11 @@ def send_arm_state():
         cherrypy.engine.publish('websocket-broadcast', TextMessage("server:state:arm"))
     else:
         cherrypy.engine.publish('websocket-broadcast', TextMessage("server:state:unarm"))
+
+
+def send_IP():
+    global IP_adr
+    cherrypy.engine.publish('websocket-broadcast', TextMessage("IP:" + IP_adr + ":8080"))
 
 
 def arm_callback(self, attr, m):
@@ -147,6 +167,10 @@ class WebSocketHandler(WebSocket):
         elif m.data == "client:get:arm":
             send_arm_state()
 
+        elif m.data == "client:get:IP":
+            global IP_adr
+            send_IP()
+
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print 'deconnexion of a client, reason :', reason
 
@@ -155,7 +179,8 @@ class Cherrypy_server(object):
 
     @cherrypy.expose
     def index(self):
-        return file('public/html/index.html', 'r').read() % {'WS_ADR_GET': 'ws://' + getIpAdress() + ':8080/ws'}
+        global IP_adr
+        return file('public/html/index.html', 'r').read() % {'WS_ADR_GET': 'ws://' + IP_adr + ':8080/ws'}
 
     @cherrypy.expose
     def ws(self):
