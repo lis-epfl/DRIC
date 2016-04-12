@@ -15,9 +15,8 @@ $(document).ready(function()
         e.preventDefault();
     };
 
-    ws.onmessage = function (evt) 
+    ws.onmessage = function (evt)
     {
-        // console.log(evt.data)
         if (evt.data.substring(0, 4) == "plot" )
         {
             var all_var = (String(evt.data).substring(5)).split(';');
@@ -26,7 +25,8 @@ $(document).ready(function()
             current_x[1] += 0.1;
             current_x[2] += 0.1;
 
-            var trace = {
+            var trace = 
+            {
                 x : [[current_x[0]],
                      [current_x[1]],
                      [current_x[2]]],
@@ -35,8 +35,6 @@ $(document).ready(function()
                      [parseFloat(all_var[1])],
                      [parseFloat(all_var[2])]]
             };
-
-            // console.log(all_var);
 
             Plotly.extendTraces('myDiv', trace, [0,1,2], 50);
         }
@@ -48,11 +46,16 @@ $(document).ready(function()
         {
             document.getElementById("send").childNodes[0].nodeValue="Arm";
         }
+        else if (String(evt.data).substring(0,3) == "IP:")
+        {
+            document.getElementById("IP_label").innerHTML = String(evt.data).substring(3);
+        }
     };
 
     ws.onopen = function() //when the client boot
     {
         ws.send("client:get:arm");
+        ws.send("client:get:IP");
 
         var data = [
         {
