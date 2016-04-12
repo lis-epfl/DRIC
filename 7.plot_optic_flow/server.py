@@ -23,6 +23,8 @@ from ws4py.messaging import TextMessage
 
 # drone lib
 import dronekit
+
+# plot libs
 import json
 import plotly
 
@@ -31,6 +33,18 @@ import plotly
 global IP_adr
 global vehicle
 x = 0
+
+can = np.array([0.0])
+cad = np.array([0.0])
+def handle_can(self, name, msg):
+    '''
+    Handle debug vects sent by saccade_telemetry
+    '''
+    if msg.name == 'CAN and CA':
+        can[0] = msg.x
+        cad[0] = msg.y
+        # print cad
+
 
 of_loc = np.array([-160.875 + 1.125 * i for i in range(125)]
                 + [  19.125 + 1.125 * i for i in range(125)]
@@ -47,12 +61,13 @@ def handle_of(self, name, msg):
         j = 60 * (step + 1)
         of[i:j] = msg.data
 
-        if step == 4:
-            print(of)
+        # if step == 4:
+            # print(of)
         #     publish_message(self)
 
 def main():
-    IP_adr = getIpAdress()
+    # IP_adr = getIpAdress()
+    IP_adr = '0.0.0.0'
 
     WebSocketPlugin(cherrypy.engine).subscribe()
     cherrypy.tools.websocket = WebSocketTool()
@@ -63,10 +78,13 @@ def main():
     # Use mavric message set
     dronekit.mavutil.set_dialect('mavric')
 
-    # for local simulated drone
+    # Create vehicle
     # vehicle = dronekit.connect("udp:localhost:14550", rate=100)
-    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=100)
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=500)
+
+    # Add custom message callbacks
     vehicle.add_message_listener('BIG_DEBUG_VECT', handle_of)
+    vehicle.add_message_listener('DEBUG_VECT', handle_can)
 
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
@@ -95,15 +113,29 @@ def main():
 
 
 def publish_message(vehicle):
+
+    # print(cad2)
+
     msg = {
         'data': [{
-                    't':of_loc,
-                    'r':np.abs(of),
-                    'type': 'markers'
+                    't': [np.rad2deg(cad[0]), np.rad2deg(cad[0])],
+                    'r': [0, 1000],
+                    'type': 'bar',
+                    # 'mode': 'lines+markers',
+                    # 'line': {'witdh': 10},
+                    'name': 'CAD'
+                },
+                {
+                    't':of_loc[:250],
+                    'r':np.abs(of[:250]),
+                    # 'type': 'scatter',
+                    'mode': 'lines+markers',
+                    'line': {'witdh': 10},
+                    'name': 'OF'
                 }],
         'layout':{
-                    'title': 'Optic Flow',
-                    'radialaxis': { 'range': [0, 1000] }
+                    'radialaxis': { 'range': [0, 1000] },
+                    'title': 'Optic Flow'
                  }
     }
     # print(of)
@@ -147,66 +179,3 @@ class Cherrypy_server(object):
 
 if __name__ == '__main__':
     main()
-
-# possible to get those parameter by : sorted ( vehicle.parameters.keys() )
-
-# possible message :
-# CLIENT:ASK:TRACENB:BIAS_ACC_X
-# CLIENT:ASK:TRACENB:BIAS_ACC_Y
-# CLIENT:ASK:TRACENB:BIAS_ACC_Z
-# CLIENT:ASK:TRACENB:BIAS_GYRO_X
-# CLIENT:ASK:TRACENB:BIAS_GYRO_Y
-# CLIENT:ASK:TRACENB:BIAS_GYRO_Z
-# CLIENT:ASK:TRACENB:BIAS_MAG_X
-# CLIENT:ASK:TRACENB:BIAS_MAG_Y
-# CLIENT:ASK:TRACENB:BIAS_MAG_Z
-# CLIENT:ASK:TRACENB:COM_RC_IN_MODE
-# CLIENT:ASK:TRACENB:CTRL_CTRL_SRC
-# CLIENT:ASK:TRACENB:ID_SYSID
-# CLIENT:ASK:TRACENB:PITCH_R_D_CLIP
-# CLIENT:ASK:TRACENB:PITCH_R_I_CLIP
-# CLIENT:ASK:TRACENB:PITCH_R_KD
-# CLIENT:ASK:TRACENB:PITCH_R_KI
-# CLIENT:ASK:TRACENB:PITCH_R_KP
-# CLIENT:ASK:TRACENB:POS_KP_ALT_BARO
-# CLIENT:ASK:TRACENB:POS_KP_POS0
-# CLIENT:ASK:TRACENB:POS_KP_POS1
-# CLIENT:ASK:TRACENB:POS_KP_POS2
-# CLIENT:ASK:TRACENB:POS_KP_VELB
-# CLIENT:ASK:TRACENB:QF_KP_ACC
-# CLIENT:ASK:TRACENB:QF_KP_MAG
-# CLIENT:ASK:TRACENB:ROLL_R_D_CLIP
-# CLIENT:ASK:TRACENB:ROLL_R_I_CLIP
-# CLIENT:ASK:TRACENB:ROLL_R_KP
-# CLIENT:ASK:TRACENB:ROLL_R_KI
-# CLIENT:ASK:TRACENB:ROLL_R_KD
-# CLIENT:ASK:TRACENB:SCALE_ACC_X
-# CLIENT:ASK:TRACENB:SCALE_ACC_Y
-# CLIENT:ASK:TRACENB:SCALE_ACC_Z
-# CLIENT:ASK:TRACENB:SCALE_GYRO_X
-# CLIENT:ASK:TRACENB:SCALE_GYRO_Y
-# CLIENT:ASK:TRACENB:SCALE_GYRO_Z
-# CLIENT:ASK:TRACENB:SCALE_MAG_X
-# CLIENT:ASK:TRACENB:SCALE_MAG_Y
-# CLIENT:ASK:TRACENB:SCALE_MAG_Z
-# CLIENT:ASK:TRACENB:THRV_I_PREG
-# CLIENT:ASK:TRACENB:THRV_KP
-# CLIENT:ASK:TRACENB:THRV_KD
-# CLIENT:ASK:TRACENB:THRV_SOFT
-# CLIENT:ASK:TRACENB:VEL_CLIMBRATE
-# CLIENT:ASK:TRACENB:VEL_CRUISESPEED
-# CLIENT:ASK:TRACENB:VEL_DIST2VEL
-# CLIENT:ASK:TRACENB:VEL_HOVERPGAIN
-# CLIENT:ASK:TRACENB:VEL_HOVERDGAIN
-# CLIENT:ASK:TRACENB:VEL_SOFTZONE
-# CLIENT:ASK:TRACENB:VEL_WPT_PGAIN
-# CLIENT:ASK:TRACENB:VEL_WPT_DGAIN
-# CLIENT:ASK:TRACENB:YAW_R_D_CLIP
-# CLIENT:ASK:TRACENB:YAW_R_I_CLIP
-# CLIENT:ASK:TRACENB:YAW_R_KP
-# CLIENT:ASK:TRACENB:YAW_R_KI
-# CLIENT:ASK:TRACENB:YAW_R_KD
-# CLIENT:ASK:TRACENB:YAW_R_P_CLMN
-# CLIENT:ASK:TRACENB:YAW_R_P_CLMX
-
-# example : CLIENT:ASK:TRACE1:THRV_KD"
