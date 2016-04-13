@@ -27,10 +27,26 @@ from ws4py.messaging import TextMessage
 # drone lib
 import dronekit
 
+# plot libs
+import json
+import plotly
+
 #   ### global var ###
 
 # global vehicle
-x = 0
+msg_tab = {
+    #server sending stuff
+
+    'PLOT_DATA' : 0,    # 4 values for the plot
+    'ARM_STATE' : 1,    # 1 value, arm state
+    'IP'        : 2,    # 1 string containing IP adress of server
+
+    #client sending stuff
+    'SWITCH_ARM' : 100, # no value
+    'GET_ARM'    : 101, # no value
+    'GET_IP'     : 102  # no value
+}
+
 
 # usefull function
 
@@ -49,16 +65,17 @@ def main():
 
     cherrypy.config.update({'server.socket_host': IP_adr,
                             'server.socket_port': 8080})
-
     
-    # vehicle = dronekit.connect("udp:localhost:14550", rate=20)    # for local simulated drone
-    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
+    vehicle = dronekit.connect("udp:localhost:14550", rate=20)    # for local simulated drone
+    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
     print 'drone found, waiting ready'
     vehicle.wait_ready()
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     vehicle.add_attribute_listener('armed', arm_callback)
     publish_message()
+
+    # init_message()
 
     conf = {
         '/':
@@ -83,21 +100,25 @@ def main():
 
 
 def publish_message():
-    global x, vehicle
-    x += 0.1
+    global vehicle
 
-    # trace format example :
-    # plot:156.096;765.9866;739.0985;34.97
-    #      trace1 ; trace2 ; trace3 ; trace4
+    json_msg = get_json_msg(msg_tab['PLOT_DATA'], [vehicle.attitude.pitch, vehicle.attitude.roll, vehicle.attitude.yaw, 0])
 
-    msg = 'plot:'
-    msg += str(vehicle.attitude.pitch) + ';'
-    msg += str(vehicle.attitude.roll) + ';'
-    msg += str(vehicle.attitude.yaw)
-
-    cherrypy.engine.publish('websocket-broadcast', msg)
+    cherrypy.engine.publish('websocket-broadcast', json_msg)
 
     threading.Timer(0.080, publish_message).start()
+
+
+def get_json_msg(code, data):
+
+    if isinstance(data, list):
+        msg = {
+            'code' : code,
+            'data' : data
+        }
+        return json.dumps(msg, cls=plotly.utils.PlotlyJSONEncoder)
+    else:
+        print 'error: data format is not an list', data
 
 
 def getIpAdress():
@@ -108,6 +129,7 @@ def getIpAdress():
 
     return ip
 
+
 def internet_on():
         try:
             response=urllib2.urlopen('http://gmail.com',timeout=1)
@@ -117,22 +139,21 @@ def internet_on():
 
         return False
 
+
 def send_arm_state():
     global vehicle
     print 'sent arm state:' + str(vehicle.armed)
-    if vehicle.armed:
-        cherrypy.engine.publish('websocket-broadcast', TextMessage("server:state:arm"))
-    else:
-        cherrypy.engine.publish('websocket-broadcast', TextMessage("server:state:unarm"))
+
+    cherrypy.engine.publish('websocket-broadcast', get_json_msg(msg_tab['ARM_STATE'], [vehicle.armed]))
 
 
 def send_IP():
     global IP_adr
-    cherrypy.engine.publish('websocket-broadcast', TextMessage("IP:" + IP_adr + ":8080"))
+    # cherrypy.engine.publish('websocket-broadcast', TextMessage("IP:" + IP_adr + ":8080"))
+    cherrypy.engine.publish('websocket-broadcast', get_json_msg(msg_tab['IP'], [IP_adr + ":8080"]) )
 
 
 def arm_callback(self, attr, m):
-    print 'arm_callback:' + str(m)
     send_arm_state()
 
 
@@ -142,10 +163,13 @@ def arm_callback(self, attr, m):
 class WebSocketHandler(WebSocket):
 
     def received_message(self, m):
-        print 'receive : ' + m.data
+        msg = json.loads(m.data)
+        # print 'receive : ' + m.data
         global vehicle
 
-        if m.data == "client:arm:switch":
+        if msg['code'] == msg_tab['SWITCH_ARM']:
+            print 'receive command: SWITCH_ARM'
+
             vehicle.commands.upload()
 
             isarmed = vehicle.armed
@@ -164,12 +188,17 @@ class WebSocketHandler(WebSocket):
                 print 'error : cannot change arm state, timout after 5 seconds'
                 send_arm_state()
 
-        elif m.data == "client:get:arm":
+        elif msg['code'] == msg_tab['GET_IP']:
+            print 'receive command: GET_IP'
+            send_IP()
+
+        elif msg['code'] == msg_tab['GET_ARM']:
+            print 'receive command: GET_ARM'
             send_arm_state()
 
-        elif m.data == "client:get:IP":
-            global IP_adr
-            send_IP()
+        else:
+            print 'receive unknown message :' + m.data
+
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print 'deconnexion of a client, reason :', reason
