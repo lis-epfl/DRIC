@@ -31,28 +31,31 @@ import dronekit
 import json
 import plotly
 
-# personnal library
-from client import Client
 
 #   ### global var ###
 
+
 # global vehicle
+
+
 msg_tab = {
     #server sending stuff
 
-    'PLOT_DATA' : 0,    # 4 values for the plot
-    'ARM_STATE' : 1,    # 1 value, arm state
-    'IP'        : 2,    # 1 string containing IP adress of server
+    'PLOT_DATA'     : 0,
+    # when the server send plot_data to the client
+    # in data: 4 values for the plot
+
+    'ARM_STATE'     : 1,# 1 value, arm state
+    'IP'            : 2, # 1 string containing IP adress of server
 
     #client sending stuff
-    'SWITCH_ARM' : 100, # no value
-    'GET_ARM'    : 101, # no value
-    'GET_IP'     : 102  # no value
+    'SWITCH_ARM'    : 100, # no value
+    'GET_ARM'       : 101, # no value
+    'GET_IP'        : 102, # no value
+    'PLOT_RATE'     : 103, # 1 int value : the rate in seconde, if rate=0, it means 'stop sending data'
+    'PLOT_NEW_DATA' : 104  # 4 values, no working for now
 }
 
-# number_of_client = 0
-
-# client_list = []
 
 # usefull function
 
@@ -68,8 +71,7 @@ def main():
     IP_adr = getIpAdress()
     number_of_client = 0
 
-    # ChatPlugin(cherrypy.engine).subscribe()
-    ChatPlugin(cherrypy.engine).subscribe()
+    ClientWebPlugin(cherrypy.engine).subscribe()
 
     cherrypy.tools.websocket = WebSocketTool()
 
@@ -83,9 +85,6 @@ def main():
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     vehicle.add_attribute_listener('armed', arm_callback)
-    publish_message()
-
-    # init_message()
 
     conf = {
         '/':
@@ -107,16 +106,6 @@ def main():
         }
     }
     cherrypy.quickstart(Cherrypy_server(), '/', conf)
-
-
-def publish_message():
-    global vehicle
-
-    json_msg = get_json_msg('PLOT_DATA', [vehicle.attitude.pitch, vehicle.attitude.roll, vehicle.attitude.yaw, 0])
-
-    cherrypy.engine.publish('websocket-broadcast', json_msg)
-
-    threading.Timer(0.080, publish_message).start()
 
 
 def get_json_msg(code, data):
@@ -150,35 +139,45 @@ def internet_on():
         return False
 
 
-def send_arm_state():
+def send_arm_state(client='everyone'):
     global vehicle
+    send_data('ARM_STATE', [vehicle.armed], client)
     print 'sent arm state:' + str(vehicle.armed)
-
-    cherrypy.engine.publish('websocket-broadcast', get_json_msg('ARM_STATE', [vehicle.armed]))
 
 
 def send_IP(client='everyone'):
     global IP_adr
-    sent = False
+    send_data('IP', [IP_adr + ":8080"], client)
+    print 'sent IP to ', client
+
+
+def send_data(code, data, client='everyone'):
+    if not isinstance(code, str):
+        print 'code need to be a string'
+        return
+
+    elif not isinstance(data, list):
+        print 'data need to be an array'
+        return
+
 
     if isinstance(client, str):
-        if client == 'everyone':
-            cherrypy.engine.publish('websocket-broadcast', get_json_msg('IP', [IP_adr + ":8080"]) )
-            sent = True
+        if client in ['everyone', 'websocket-broadcast']:
+            cherrypy.engine.publish('websocket-broadcast', get_json_msg(code, data))
 
-    if isinstance(client, list) and isinstance(client[0], int):
+    elif isinstance(client, list) and isinstance(client[0], int):
         for element in client:
-            current = cherrypy.engine.publish('get-client', element)
-            current.send(get_json_msg('IP', [IP_adr + ":8080"]))
-        sent = True
+            current = cherrypy.engine.publish('get-client', element).pop()
+            current.send(get_json_msg(code, data))
 
-    if isinstance(client, int):
+    elif isinstance(client, int):
         current = cherrypy.engine.publish('get-client', client).pop()
-        current.send(get_json_msg('IP', [IP_adr + ":8080"]))
-        sent = True
+        current.send(get_json_msg(code, data))
 
-    if not sent:
-        print 'send_Ip, client type error'
+    else:
+        print 'send_Ip func: client type error'
+        return
+
 
 def arm_callback(self, attr, m):
     send_arm_state()
@@ -186,7 +185,7 @@ def arm_callback(self, attr, m):
 
 #   ### classes definition ###
 
-class ChatPlugin(WebSocketPlugin):
+class ClientWebPlugin(WebSocketPlugin):
     def __init__(self, bus):
         WebSocketPlugin.__init__(self, bus)
         self.clients = {}
@@ -206,14 +205,14 @@ class ChatPlugin(WebSocketPlugin):
 
     def add_client(self, client_code, websocket):
         self.clients[client_code] = websocket
-        # print 'add-client --------------------------------------------------------------', client_code
 
     def get_client(self, client_code):
-        # print 'get client', client_code
-        return self.clients[client_code]
+        try:
+            return self.clients[client_code]
+        except KeyError: #if there is no client 'clicent_code'
+            return -1
 
     def del_client(self, client_code):
-        # print 'del client', client_code
         del self.clients[client_code]
 
 
@@ -224,9 +223,18 @@ class WebSocketHandler(WebSocket):
         self.client_code = number_of_client
         cherrypy.engine.publish('add-client', self.client_code, self)
 
+        self.plot = {
+            'current_state' : False,
+#           'data' : [ptch, roll, yaw, 0],      # this field contain which value to plot, no working for now
+            'rate' : 0.080
+        }
+
+        self.send_plot_data()
+
     def received_message(self, m):
         msg = json.loads(m.data)
-        # print 'receive : ' + m.data
+        data = msg['data']
+
         global vehicle
 
         if msg['code'] == msg_tab['SWITCH_ARM']:
@@ -258,13 +266,44 @@ class WebSocketHandler(WebSocket):
             print 'receive command: GET_ARM from client ', self.client_code
             send_arm_state()
 
-        else:
-            print 'receive unknown message :' + m.data
+        elif msg['code'] == msg_tab['PLOT_RATE']:
+            if data[0] == 0:    # 0 means that the client don't want plot data anymore
+                self.plot['current_state'] = False
+                print 'receive order to stop sending plot data from client ', self.client_code
 
+            elif self.plot['current_state'] == True:
+                self.plot['rate'] = data[0]
+                print 'receive order to change the rate of plot data from client ', self.client_code
+
+            else:
+                self.plot['rate'] = data[0]
+                self.plot['current_state'] = True
+                print 'receive order to send plot data from client ', self.client_code
+                self.send_plot_data()
+
+        else:
+            print 'receive unknown message :' + m.data 
+
+
+    def send_plot_data(self):
+
+    #### 1st :
+
+        if self.plot['current_state'] and self.terminated == False:
+            global vehicle
+
+            json_msg = get_json_msg('PLOT_DATA', [vehicle.attitude.pitch, vehicle.attitude.roll, vehicle.attitude.yaw, 0])
+            self.send(json_msg)
+
+            threading.Timer(self.plot['rate'], self.send_plot_data).start()
+
+        else:
+            print 'stop sending plot data'
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print 'deconnexion of a client, reason :', reason
         cherrypy.engine.publish('del-client', self.client_code)
+        self.plot['current_state'] = False
 
 
 class Cherrypy_server(object):

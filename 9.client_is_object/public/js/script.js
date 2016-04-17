@@ -4,18 +4,21 @@ $(document).ready(function()
     var ws = new WebSocket(wr_adr);
     var current_x = [0,0,0];
     var plot_visible = false;
+    var plot_rate = 0.080;
 
     var msg_tab = {
         //server sending stuff
 
-        'PLOT_DATA' : 0,    // 4 values for the plot
-        'ARM_STATE' : 1,    // 1 value, arm state
-        'IP'        : 2,    // 1 string containing IP adress of server
+        'PLOT_DATA'     : 0,    // 4 values for the plot
+        'ARM_STATE'     : 1,    // 1 value, arm state
+        'IP'            : 2,    // 1 string containing IP adress of server
 
         //client sending stuff
-        'SWITCH_ARM' : 100, // no value
-        'GET_ARM'    : 101, // no value
-        'GET_IP'     : 102  // no value
+        'SWITCH_ARM'    : 100, // no value
+        'GET_ARM'       : 101, // no value
+        'GET_IP'        : 102, // no value
+        'PLOT_RATE'     : 103, // 1 int value : the rate in seconde, if rate is 0, stop plot
+        'PLOT_NEW_DATA' : 104  // 4 value, not working for now
     };
 
     window.onbeforeunload = function(e) 
@@ -147,19 +150,57 @@ $(document).ready(function()
         }
     });
 
+    $("#rate_id").change(function()
+    { //new onboard is selected
+        plot_rate = parseInt(String($("#rate_id").val()).substring(0, 3));
+
+        console.log('change plot rate to:' + String(plot_rate));
+
+        // ws.send("CLIENT:ASK:TRACE1:" + $("#trace1_enum").val());
+        if (plot_visible)
+        {
+            var msg = {
+                    code : msg_tab['PLOT_RATE'],
+                    data : [plot_rate / 1000.0]
+                };
+
+            // console.log(msg.data[0]);
+
+            ws.send( JSON.stringify(msg) );
+        }
+
+        return false;
+    });
+
     $("#show_plot").click(function()
     {
-
         // $this will contain a reference to the checkbox   
         if (plot_visible) 
         {
             document.getElementById('myDiv').style.visibility = 'hidden';
             plot_visible = false;
+
+            var msg = {
+                code : msg_tab['PLOT_RATE'],
+                data : [0]                   // order to server : stop sending data
+            };
+
+            ws.send( JSON.stringify(msg) );
+
+            console.log('sent stop sending data');
         } 
         else 
         {
             document.getElementById('myDiv').style.visibility = 'visible';
             plot_visible = true;
+
+            var msg = {
+                code : msg_tab['PLOT_RATE'],
+                data : [plot_rate / 1000.0]               // order to server : start sending data at a rate of 0.080
+            };
+
+            ws.send( JSON.stringify(msg) );
+            console.log('sent start sending data');
         }
     });
 
