@@ -5,6 +5,8 @@ $(document).ready(function()
     var current_x = [0,0,0];
     var plot_visible = false;
     var plot_rate = 0.080;
+    var time_start = new Date().getTime();
+    var plotDiv = document.getElementById('myDiv');
 
     var msg_tab = {
         //server sending stuff
@@ -40,15 +42,19 @@ $(document).ready(function()
             {
                 // console.log("receive data to plot");
 
-                current_x[0] += 0.1;
-                current_x[1] += 0.1;
-                current_x[2] += 0.1;
+                var current = new Date().getTime();
+
+                var inSeconds = Math.round((current - time_start) /100) /10 ;
+
+                // current_x[0] += 0.1;
+                // current_x[1] += 0.1;
+                // current_x[2] += 0.1;
 
                 var trace = 
                 {
-                    x : [[current_x[0]],
-                         [current_x[1]],
-                         [current_x[2]]],
+                    x : [ [inSeconds],
+                          [inSeconds],
+                          [inSeconds] ],
 
                     y : [[ msg.data[0] ],
                          [ msg.data[1] ],
@@ -177,6 +183,7 @@ $(document).ready(function()
         // $this will contain a reference to the checkbox   
         if (plot_visible) 
         {
+
             document.getElementById('myDiv').style.visibility = 'hidden';
             plot_visible = false;
 
@@ -201,6 +208,15 @@ $(document).ready(function()
 
             ws.send( JSON.stringify(msg) );
             console.log('sent start sending data');
+
+            // time_start = new Date().getTime();
+
+            
+
+            //clear plot data here !!
+
+            // plotDiv.data.push ( { x: [], y: [] } );
+            // Plotly.redraw(plotDiv);
         }
     });
 
