@@ -149,13 +149,6 @@ def send_IP(client='everyone'):
     print 'sent IP to ', client
 
 
-def send_location(client='everyone'):
-    global vehicle
-    send_data('LOC', [vehicle.location.global_frame.lat,
-                      vehicle.location.global_frame.lon,
-                      vehicle.location.global_frame.alt], client)
-    print 'sent location to ', client
-
 def send_data(code, data, client='everyone'):
     if not isinstance(code, str):
         print 'code need to be a string'
@@ -237,6 +230,11 @@ class WebSocketHandler(WebSocket):
             'rate' : 0.080
         }
 
+        self.location = {
+            'current_state' : False,
+            'rate' : 1.000
+        }
+
         self.send_plot_data()
 
     def received_message(self, m):
@@ -290,8 +288,19 @@ class WebSocketHandler(WebSocket):
                 self.send_plot_data()
 
         elif msg['code'] == msg_tab['GET_LOC']:
+            if data[0] > 0:
+                self.location['current_state'] = True
+                self.location['rate'] = data[0]
+                self.send_location()
+
+            elif data[0] < 0:
+                print 'receive a location get order with a rate < 0 :', m.data
+                return
+
+            else:
+                self.send_location(True)
+
             print 'receive order to send location from client ', self.client_code
-            self.send_location(data[0])
 
         else:
             print 'receive unknown message :' + m.data 
@@ -311,11 +320,20 @@ class WebSocketHandler(WebSocket):
             print 'stop sending plot data'
 
 
-    def send_location(self, rate):
-        send_location(self.client_code)
+    def send_location(self, once=False):
+        global vehicle
 
-        if rate > 0:
-            threading.Timer(rate, self.send_location, rate).start()
+        if self.terminated:
+            return
+
+        if once or self.location['current_state']:
+            send_data('LOC', [vehicle.location.global_frame.lat,
+                              vehicle.location.global_frame.lon,
+                              vehicle.location.global_frame.alt], self.client_code)
+
+        if self.location['current_state']:
+            threading.Timer(self.location['rate'], self.send_location).start()
+
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print 'deconnexion of a client, reason :', reason

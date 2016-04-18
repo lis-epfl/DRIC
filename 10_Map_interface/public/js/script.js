@@ -118,6 +118,13 @@ $(document).ready(function()
         // ws.send( JSON.stringify(msg3) );
 
         initMap();
+
+        var msg3 = {
+            code : msg_tab['GET_LOC'],
+            data : [1.0]
+        };
+
+        ws.send( JSON.stringify(msg3) );
     };
 
     ws.onclose = function(evt) //when the client is closing
@@ -141,7 +148,7 @@ $(document).ready(function()
         }
     });
 
-    $("#show_plot").click(function()
+    $("#get_loc").click(function()
     {
         var msg = {
                 code : msg_tab['GET_LOC'],
