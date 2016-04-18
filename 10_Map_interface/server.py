@@ -51,7 +51,7 @@ msg_tab = {
     'GET_IP'        : 102, # no value
     'PLOT_RATE'     : 103, # 1 int value : the rate in seconde, if rate=0, it means 'stop sending data'
     'PLOT_NEW_DATA' : 104, # 4 values, no working for now
-    'GET_LOC'       : 105  # no value
+    'GET_LOC'       : 105  # 1 value : if 0, just want to get the coord, is >0, want to get a this period the coord
 }
 
 
@@ -177,7 +177,10 @@ def send_data(code, data, client='everyone'):
 
     elif isinstance(client, int):
         current = cherrypy.engine.publish('get-client', client).pop()
-        current.send(get_json_msg(code, data))
+        if current == -1:
+            print 'error, client ', client, 'do not exist'
+        else:
+            current.send(get_json_msg(code, data))
 
     else:
         print 'send_Ip func: client type error'
@@ -287,15 +290,14 @@ class WebSocketHandler(WebSocket):
                 self.send_plot_data()
 
         elif msg['code'] == msg_tab['GET_LOC']:
-            send_location(self.client_code)
+            print 'receive order to send location from client ', self.client_code
+            self.send_location(data[0])
 
         else:
             print 'receive unknown message :' + m.data 
 
 
     def send_plot_data(self):
-
-    #### 1st :
 
         if self.plot['current_state'] and self.terminated == False:
             global vehicle
@@ -307,6 +309,13 @@ class WebSocketHandler(WebSocket):
 
         else:
             print 'stop sending plot data'
+
+
+    def send_location(self, rate):
+        send_location(self.client_code)
+
+        if rate > 0:
+            threading.Timer(rate, self.send_location, rate).start()
 
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print 'deconnexion of a client, reason :', reason

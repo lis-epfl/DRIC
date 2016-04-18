@@ -145,7 +145,7 @@ $(document).ready(function()
     {
         var msg = {
                 code : msg_tab['GET_LOC'],
-                data : []
+                data : [0]
             };
 
         ws.send( JSON.stringify(msg) );
