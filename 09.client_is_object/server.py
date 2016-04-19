@@ -52,7 +52,7 @@ msg_tab = {
     'SWITCH_ARM'    : 100, # no value
     'GET_ARM'       : 101, # no value
     'GET_IP'        : 102, # no value
-    'PLOT_RATE'     : 103, # 1 int value : the rate in seconde, if rate=0, it means 'stop sending data'
+    'PLOT_RATE'     : 103, # 1 int value : the rate in seconde, if rate=-1, it means 'stop sending data'
     'PLOT_NEW_DATA' : 104  # 4 values, no working for now
 }
 
@@ -267,7 +267,7 @@ class WebSocketHandler(WebSocket):
             send_arm_state()
 
         elif msg['code'] == msg_tab['PLOT_RATE']:
-            if data[0] == 0:    # 0 means that the client don't want plot data anymore
+            if data[0] < 0:    # -1 means that the client don't want plot data anymore
                 self.plot['current_state'] = False
                 print 'receive order to stop sending plot data from client ', self.client_code
 
@@ -284,7 +284,7 @@ class WebSocketHandler(WebSocket):
         else:
             print 'receive unknown message :' + m.data 
 
-
+ 
     def send_plot_data(self):
 
     #### 1st :

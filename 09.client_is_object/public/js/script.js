@@ -2,9 +2,8 @@
 $(document).ready(function() 
 {
     var ws = new WebSocket(wr_adr);
-    var current_x = [0,0,0];
     var plot_visible = false;
-    var plot_rate = 0.080;
+    var plot_rate = 80; //in ms
     var time_start = new Date().getTime();
     var plotDiv = document.getElementById('myDiv');
 
@@ -45,10 +44,6 @@ $(document).ready(function()
                 var current = new Date().getTime();
 
                 var inSeconds = Math.round((current - time_start) /100) /10 ;
-
-                // current_x[0] += 0.1;
-                // current_x[1] += 0.1;
-                // current_x[2] += 0.1;
 
                 var trace = 
                 {
@@ -174,8 +169,6 @@ $(document).ready(function()
 
             ws.send( JSON.stringify(msg) );
         }
-
-        return false;
     });
 
     $("#show_plot").click(function()
@@ -189,7 +182,7 @@ $(document).ready(function()
 
             var msg = {
                 code : msg_tab['PLOT_RATE'],
-                data : [0]                   // order to server : stop sending data
+                data : [-1]                   // order to server : stop sending data
             };
 
             ws.send( JSON.stringify(msg) );
