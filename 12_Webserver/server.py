@@ -31,6 +31,8 @@ import dronekit
 import json
 import plotly
 
+from server.msg_type import msg_tab, OBP_tab
+
 
 #   ### global var ###
 
@@ -38,21 +40,21 @@ import plotly
 # global vehicle
 
 
-msg_tab = {
-    #server sending stuff
-    'PLOT_DATA'     : 0, # in data: 4 values for the plot
-    'ARM_STATE'     : 1, # 1 value, arm state
-    'IP'            : 2, # 1 string containing IP adress of server
-    'LOC'           : 3, # 3 value lat, lon, alt
+# msg_tab = {
+#     #server sending stuff
+#     'PLOT_DATA'     : 0, # in data: 4 values for the plot
+#     'ARM_STATE'     : 1, # 1 value, arm state
+#     'IP'            : 2, # 1 string containing IP adress of server
+#     'LOC'           : 3, # 3 value lat, lon, alt
 
-    #client sending stuff
-    'SWITCH_ARM'    : 100, # no value
-    'GET_ARM'       : 101, # no value
-    'GET_IP'        : 102, # no value
-    'PLOT_RATE'     : 103, # 1 int value : the rate in seconde, if rate=0, it means 'stop sending data'
-    'PLOT_NEW_DATA' : 104, # 4 values, no working for now
-    'GET_LOC'       : 105  # 1 value : if -1, just want to get the coord, is >0, want to get a this period the coord
-}
+#     #client sending stuff
+#     'SWITCH_ARM'    : 100, # no value
+#     'GET_ARM'       : 101, # no value
+#     'GET_IP'        : 102, # no value
+#     'PLOT_RATE'     : 103, # 1 int value : the rate in seconde, if rate=0, it means 'stop sending data'
+#     'PLOT_NEW_DATA' : 104, # 4 values, no working for now
+#     'GET_LOC'       : 105  # 1 value : if -1, just want to get the coord, is >0, want to get a this period the coord
+# }
 
 
 
@@ -61,6 +63,7 @@ msg_tab = {
 
 
 def main():
+    
     global vehicle, IP_adr, number_of_client
 
 
@@ -241,13 +244,14 @@ class WebSocketHandler(WebSocket):
 
     def received_message(self, m):
         msg = json.loads(m.data)
+        code = msg['code']
         data = msg['data']
 
         # print msg
 
         global vehicle
 
-        if msg['code'] == msg_tab['SWITCH_ARM']:
+        if code == msg_tab['SWITCH_ARM']:
             print 'receive command: SWITCH_ARM from client ', self.client_code
 
             vehicle.commands.upload()
@@ -268,15 +272,15 @@ class WebSocketHandler(WebSocket):
                 print 'error : cannot change arm state, timout after 5 seconds'
                 send_arm_state()
 
-        elif msg['code'] == msg_tab['GET_IP']:
+        elif code == msg_tab['GET_IP']:
             print 'receive command: GET_IP from client ', self.client_code
             send_IP(self.client_code)
 
-        elif msg['code'] == msg_tab['GET_ARM']:
+        elif code == msg_tab['GET_ARM']:
             print 'receive command: GET_ARM from client ', self.client_code
             send_arm_state()
 
-        elif msg['code'] == msg_tab['PLOT_RATE']:
+        elif code == msg_tab['PLOT_RATE']:
             if data[0] <= 0:    # -1 means that the client don't want plot data anymore
                 self.plot['current_state'] = False
                 print 'receive order to stop sending plot data from client ', self.client_code
@@ -291,7 +295,7 @@ class WebSocketHandler(WebSocket):
                 print 'receive order to send plot data from client ', self.client_code
                 self.send_plot_data()
 
-        elif msg['code'] == msg_tab['GET_LOC']:
+        elif code == msg_tab['GET_LOC']:
             if data[0] > 0:
                 self.location['current_state'] = True
                 self.location['rate'] = data[0]
@@ -302,6 +306,29 @@ class WebSocketHandler(WebSocket):
                 self.send_location(True)
 
             print 'receive order to send location from client ', self.client_code
+
+        elif code == msg_tab['GET_OBP']:
+            if data[0] == 'ALL':
+                send_data( 'OBP_VALUE_ALL', [ vehicle.parameters[value] for value in OBP_tab ], self.client_code)
+            else:
+                send_data('OBP_VALUE', [ data[0], vehicle.parameters[data[0]] ], self.client_code)
+
+        elif code == msg_tab['SET_OBP']:
+
+            id_str = str(data[0])
+            value = float(data[1])
+
+            if id_str in OBP_tab:
+                # print 'receive parameter', id_str, 'to change to:', value, 'old value:', vehicle.parameters[id_str]
+                # print '::::', str(data[0]), "::", float(data[1])
+                # print type( str(data[0]) ), type( float(data[1]) )
+                vehicle.parameters[id_str] = value
+                # print 'uploading now'
+                vehicle.commands.upload()
+                send_data('OBP_VALUE', [ id_str, vehicle.parameters[id_str] ], self.client_code)
+
+                if vehicle.parameters[id_str] != value:
+                    print 'failed to change parameter ', id_str
 
         else:
             print 'receive unknown message :' + m.data 

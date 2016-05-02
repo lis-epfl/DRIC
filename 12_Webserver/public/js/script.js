@@ -16,22 +16,25 @@ $(document).ready(function()
         time_start  : new Date().getTime()
     }
 
-    var msg_tab = {
-        //server sending stuff
+    // var msg_tab = {
+    //     //server sending stuff
 
-        'PLOT_DATA'     : 0,    // 4 values for the plot
-        'ARM_STATE'     : 1,    // 1 value, arm state
-        'IP'            : 2,    // 1 string containing IP adress of server
-        'LOC'           : 3,    // 3 value lat, lon, alt
+    //     'PLOT_DATA'     : 0,    // 4 values for the plot
+    //     'ARM_STATE'     : 1,    // 1 value, arm state
+    //     'IP'            : 2,    // 1 string containing IP adress of server
+    //     'LOC'           : 3,    // 3 value lat, lon, alt
+    //     'OBP_VALUE'     : 4,    // 2 values : first one a string that contain the OBP, second the value (float)
+    //     'OBP_VALUE_ALL' : 5,    // 55 values: a list of all the float value of the OBP
 
-        //client sending stuff
-        'SWITCH_ARM'    : 100, // no value
-        'GET_ARM'       : 101, // no value
-        'GET_IP'        : 102, // no value
-        'PLOT_RATE'     : 103, // 1 int value : the rate in seconde, if rate is 0, stop plot
-        'PLOT_NEW_DATA' : 104, // 4 value, not working for now
-        'GET_LOC'       : 105, // 1 value : if -1, just want to get the coord, if >0, want to get a this period the coord
-    };
+    //     //client sending stuff
+    //     'SWITCH_ARM'    : 100, // no value
+    //     'GET_ARM'       : 101, // no value
+    //     'GET_IP'        : 102, // no value
+    //     'PLOT_RATE'     : 103, // 1 int value : the rate in seconde, if rate is 0, stop plot
+    //     'PLOT_NEW_DATA' : 104, // 4 value, not working for now
+    //     'GET_LOC'       : 105, // 1 value : if -1, just want to get the coord, if >0, want to get a this period the coord
+    //     'GET_OBP'       : 106, // 1 value, the OBP (string), if the OBP is 'ALL', then the server will return all the OBP
+    // };
 
     window.onbeforeunload = function(e) 
     {
@@ -96,6 +99,19 @@ $(document).ready(function()
                 set_drone_pos(msg.data[0], msg.data[1]);
             break;
 
+            case msg_tab['OBP_VALUE']:
+                console.log('got value of' + msg.data[0]);
+
+                document.getElementById('inp_' + msg.data[0]).value = String(msg.data[1]).substring(0,6);
+            break;
+
+            case msg_tab['OBP_VALUE_ALL']:
+                console.log('got all OBP values');
+
+                for ( i in msg.data )
+                    document.getElementById('inp_' + OBP_tab[i]).value = String(msg.data[i]).substring(0,6);
+            break;
+
             default:
                 console.log("got unknown message: " + evt.data);
             break;
@@ -113,12 +129,31 @@ $(document).ready(function()
         sendData('GET_LOC', [-1]); //TODO: change -1 to 1.0
 
         initAnyChart();
+
+        sendData('GET_OBP', ['ALL']);
     };
 
     ws.onclose = function(evt) //when the client is closing
     {
         // empty
     };
+
+    function remove_alert(id)
+    {
+        document.getElementById(id).style.visibility = 'hidden';
+    }
+
+    $(".input_tab_OP").change(function()
+    {
+        var id = String(this.id).substring(4);
+
+        console.log('sent new value for OBP:' + id );
+        sendData('SET_OBP', [ id, document.getElementById(this.id).value ] );
+
+        document.getElementById('alert_'+id).style.visibility = 'visible';
+
+        setTimeout(remove_alert, 800, 'alert_'+id);
+    })
 
     $("#send").click(function()
     {
@@ -211,21 +246,6 @@ $(document).ready(function()
             //change the button's name
             document.getElementById("arm_btn").childNodes[0].nodeValue = "Loading"
         }
-    })
-
-    $("#refresh_onboradParam_btn").click(function()
-    {
-        var input_objects = document.getElementsByClassName("input_tab_OP");
-
-        for (var i = 0 ; i < input_objects.length ; i++)
-        {
-            // console.log(input_objects[i]);
-            console.log(input_objects[i].value);
-        }
-
-        // document.getElementsByClassName("input_tab_OP").readOnly = true;
-
-        // document.getElementById("inp_BIAS_ACC_X").readOnly=true;
     })
 
     $("#disarm_btn").click(function()
