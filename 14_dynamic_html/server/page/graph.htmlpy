@@ -1,0 +1,9 @@
+BOX:
+BOXHEAD:
+<h3 class="box-title">Graph</h3>
+
+BOXBODY:
+<button id="show_plot" type="submit" class="btn btn-primary btn-sm">Play</button>
+<div id='plot' style="height:300px"></div>
+
+BOXPARAM: column=right

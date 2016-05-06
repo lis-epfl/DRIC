@@ -1,0 +1,10 @@
+BOX: style="overflow-y:hidden;overflow-x:hidden;"
+
+BOXHEAD:
+<h3 class="box-title">Map</h3>
+
+BOXBODY: style="width:100%;height:100%"
+<button id="follow_drone_btn" type="submit" class="btn btn-primary btn-sm">follow drone</button>
+<div id="map" style="height:500px"></div>
+
+BOXPARAM: column=left

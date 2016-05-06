@@ -1,14 +1,20 @@
 
 
 
+BOX:
 
-
-BOXHEAD:
+BOXHEAD: style="color:green;"
 
 
 TEST
 
-BOXBODY:
+BOXBODY: style="color:red;"
+
+
 
 THIS IS A TEST
-BOXPARAM: colomn=left
+
+
+BOXPARAM: column=left
+
+
