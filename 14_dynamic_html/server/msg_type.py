@@ -57,3 +57,8 @@ OBP_tab = [
     'YAW_R_P_CLMN','YAW_R_P_CLMX',
 ]
 
+msg_listener = {
+    # initialize to empty but filled during the program, it contain the following structur:
+    # name : [value, frequency, time of the last message received]
+}
+

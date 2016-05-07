@@ -32,7 +32,7 @@ import dronekit
 import json
 import plotly
 
-from server.msg_type import msg_tab, msg_tab_inv, OBP_tab
+from server.msg_type import msg_tab, msg_tab_inv, OBP_tab, msg_listener
 from server.html_maker import get_html_code
 
 
@@ -90,6 +90,8 @@ def main():
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
     vehicle.add_attribute_listener('armed', arm_callback)
+    vehicle.add_message_listener('*', msg_handler)
+    test()
 
     conf = {
         '/':
@@ -144,6 +146,19 @@ def internet_on():
         return False
 
 
+def msg_handler(self, name, msg):
+    new_time = time.time()
+
+    if name not in msg_listener:
+        print 'new entry:', name
+        msg_listener[name] = [msg.to_dict(), 0, new_time]
+
+    else:
+        freq = 1/(new_time - msg_listener[name][2])
+        msg_listener[name] = [msg.to_dict(), round(freq, 2), new_time]
+
+    
+
 def send_arm_state(client='everyone'):
     global vehicle
     send_data('ARM_STATE', [vehicle.armed], client)
@@ -154,6 +169,19 @@ def send_IP(client='everyone'):
     global IP_adr
     send_data('IP', [IP_adr + ":8080"], client)
     print 'sent IP to ', client
+
+# def send_
+
+
+def test():
+    testing_str = 'ATTITUDE'
+
+    if testing_str in msg_listener:
+        print get_json_msg('PLOT_DATA', [msg_listener]), '\n'
+        # print 'frequency:', msg_listener[testing_str][1], '\n'
+
+    threading.Timer(2, test).start()
+
 
 
 def send_data(code, data, client='everyone'):
