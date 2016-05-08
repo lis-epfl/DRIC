@@ -35,37 +35,10 @@ import plotly
 from server.msg_type import msg_tab, msg_tab_inv, OBP_tab, msg_listener
 from server.html_maker import get_html_code
 
-
-#   ### global var ###
-
-
-# global vehicle
-
-
-# msg_tab = {
-#     #server sending stuff
-#     'PLOT_DATA'     : 0, # in data: 4 values for the plot
-#     'ARM_STATE'     : 1, # 1 value, arm state
-#     'IP'            : 2, # 1 string containing IP adress of server
-#     'LOC'           : 3, # 3 value lat, lon, alt
-
-#     #client sending stuff
-#     'SWITCH_ARM'    : 100, # no value
-#     'GET_ARM'       : 101, # no value
-#     'GET_IP'        : 102, # no value
-#     'PLOT_RATE'     : 103, # 1 int value : the rate in seconde, if rate=0, it means 'stop sending data'
-#     'PLOT_NEW_DATA' : 104, # 4 values, no working for now
-#     'GET_LOC'       : 105  # 1 value : if -1, just want to get the coord, is >0, want to get a this period the coord
-# }
-
-
-
-
 # usefull function
 
 
 def main():
-    
     global vehicle, IP_adr, number_of_client, client_handler
 
 
@@ -83,6 +56,7 @@ def main():
     cherrypy.config.update({'server.socket_host': IP_adr,
                             'server.socket_port': 8080})
     
+    print 'waiting for drone'
     vehicle = dronekit.connect("udp:localhost:14550", rate=20)    # for local simulated drone
     # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
     print 'drone found, waiting ready'
@@ -91,7 +65,8 @@ def main():
 
     vehicle.add_attribute_listener('armed', arm_callback)
     vehicle.add_message_listener('*', msg_handler)
-    test()
+    # test()
+    # threading.Timer(5, send_plot_message).start() # start in 5 seconds
 
     conf = {
         '/':
@@ -170,7 +145,11 @@ def send_IP(client='everyone'):
     send_data('IP', [IP_adr + ":8080"], client)
     print 'sent IP to ', client
 
-# def send_
+# # def send_
+# def send_plot_message():
+
+
+#     threading.Timer(5, send_plot_message).start() # every 5 seconds
 
 
 def test():
@@ -464,6 +443,14 @@ class WebSocketHandler(WebSocket):
 
         elif code == msg_tab['ASK_CLIENT_STATUS']:
             self.send_client_status()
+
+        elif code == msg_tab['MAVLINK_MESSAGE']:
+            if self.is_main_client:
+                vehicle.message_factory.command_long_send(int(data[0]), int(data[1]), int(data[2]), int(data[3]), float(data[4]), float(data[5]), 
+                                                          float(data[6]), float(data[7]), float(data[8]), float(data[9]), float(data[10]))
+
+            else:
+                pass #just ignore
 
         else:
             print 'receive unknown message :' + m.data 

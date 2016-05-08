@@ -1,0 +1,88 @@
+BOX:
+BOXHEAD:
+<h3 class="box-title">Graph Data</h3>
+BOXBODY:
+
+<div style="overflow-x:auto;overflow-y:auto;height: 250px;">
+<table id="example1" class="table table-bordered table-striped" style="color:black;">
+  <thead>
+
+    <tr>
+      <th>Parameters</th>
+      <th>Values</th>
+    </tr>
+
+  </thead>
+  <tbody>
+
+  <tbody>
+
+    <tr><td>
+        ATTITUDE</td><td><div class='some_random_things' id ='graph_data_ATTITUDE'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        ATTITUDE_QUATERNION</td><td><div class='some_random_things' id ='graph_data_ATTITUDE_QUATERNION'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        AUTOPILOT_VERSION</td><td><div class='some_random_things' id ='graph_data_AUTOPILOT_VERSION'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        COMMAND_ACK</td><td><div class='some_random_things' id ='graph_data_COMMAND_ACK'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        DISTANCE_SENSOR</td><td><div class='some_random_things' id ='graph_data_DISTANCE_SENSOR'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        GLOBAL_POSITION_INT</td><td><div class='some_random_things' id ='graph_data_GLOBAL_POSITION_INT'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        GPS_RAW_INT</td><td><div class='some_random_things' id ='graph_data_GPS_RAW_INT'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        HEARTBEAT</td><td><div class='some_random_things' id ='graph_data_HEARTBEAT'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        LOCAL_POSITION_NED</td><td><div class='some_random_things' id ='graph_data_LOCAL_POSITION_NED'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        LOCAL_POSITION_NED_COV</td><td><div class='some_random_things' id ='graph_data_LOCAL_POSITION_NED_COV'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        NAMED_VALUE_FLOAT</td><td><div class='some_random_things' id ='graph_data_NAMED_VALUE_FLOAT'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        RC_CHANNELS_RAW</td><td><div class='some_random_things' id ='graph_data_RC_CHANNELS_RAW'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        RC_CHANNELS_SCALED</td><td><div class='some_random_things' id ='graph_data_RC_CHANNELS_SCALED'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        SCALED_IMU</td><td><div class='some_random_things' id ='graph_data_SCALED_IMU'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        SCALED_PRESSURE</td><td><div class='some_random_things' id ='graph_data_SCALED_PRESSURE'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        SERVO_OUTPUT_RAW</td><td><div class='some_random_things' id ='graph_data_SERVO_OUTPUT_RAW'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        SYS_STATUS</td><td><div class='some_random_things' id ='graph_data_SYS_STATUS'>SALUT</div>
+    </td></tr>
+    <tr><td>
+        VFR_HUD</td><td><div class='some_random_things' id ='graph_data_VFR_HUD'>SALUT</div>
+    </td></tr>
+    
+  </tbody>
+  <tfoot>
+    <tr>
+
+      <th>Parameters</th>
+      <th>Values</th>
+
+    </tr>
+  </tfoot>
+</table>
+</div> <!-- scroll -->
+
+
+BOXPARAM: column=left

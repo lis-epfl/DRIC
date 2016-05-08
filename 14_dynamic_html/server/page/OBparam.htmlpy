@@ -6,7 +6,7 @@ BOXHEAD:
 
 BOXBODY:
 <div style="overflow-x:auto;overflow-y:auto;height: 250px;">
-<table id="example1" class="table table-bordered table-striped" style="color:black;">
+<table id="OBP_table" class="table table-bordered table-striped" style="color:black;">
   <thead>
 
     <tr>

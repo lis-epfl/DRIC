@@ -22,6 +22,7 @@ var msg_tab = {
         'SWITCH_STATE'      : 108,  // 0 value, client ask to become an observer or a controller
         'ASK_CLIENT_STATUS' : 109,  // 1 value, ask what is the client status, nedd to transmit a code that will be returned
         'ANSW_CHANGE_STATUS': 110,  // 2 values : 1st: code that is transmit back, 2nd: true or false to the answer of 'ASK_CHANGE'
+        'MAVLINK_MESSAGE'   : 111,  // 11 values of the mavlink message (see .message_factory.command_long_send? dronekit doc)
     };
 
 var OBP_tab = [
