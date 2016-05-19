@@ -1,0 +1,35 @@
+BOX:
+
+BOXHEAD:
+<h3 class="box-title">Onboard Parameter</h3>
+<div class="alert alert-info" style="visibility:hidden;width:165px;display:inline;" id="change_alert"><i class="icon fa fa-info"></i>Change received</div>
+
+BOXBODY:
+<div style="overflow-x:auto;overflow-y:auto;height: 250px;">
+<table id="OBP_table" class="table table-bordered table-striped" style="color:black;">
+  <thead>
+
+    <tr>
+      <th>Parameters</th>
+      <th>Values</th>
+    </tr>
+
+  </thead>
+  <tbody>
+
+  <tbody id='OBparam_body'>
+    
+  </tbody>
+  <tfoot>
+    <tr>
+
+      <th>Parameters</th>
+      <th>Values</th>
+
+    </tr>
+  </tfoot>
+</table>
+</div> <!-- scroll -->
+
+BOXPARAM: column=right
+BOXSCRIPT:

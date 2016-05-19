@@ -1,0 +1,20 @@
+
+
+
+BOX:
+
+BOXHEAD: style="color:green;"
+
+
+TEST
+
+BOXBODY: style="color:red;"
+<div id='tomodifie'></div>
+
+
+THIS IS A TEST
+
+
+BOXPARAM: column=left
+
+BOXSCRIPT:

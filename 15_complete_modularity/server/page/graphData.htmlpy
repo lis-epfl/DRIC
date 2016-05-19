@@ -1,0 +1,33 @@
+BOX:
+BOXHEAD:
+<h3 class="box-title">Graph Data</h3>
+BOXBODY:
+
+<div style="overflow-x:auto;overflow-y:auto;height: 250px;">
+<table id="example1" class="table table-bordered table-striped" style="color:black;">
+  <thead>
+
+    <tr>
+      <th>Parameters</th>
+      <th>frequency</th>
+    </tr>
+
+  </thead>
+
+  <tbody id='Graph_data_id'>
+    
+  </tbody>
+  <tfoot>
+    <tr>
+
+      <th>Parameters</th>
+      <th>Frequency</th>
+
+    </tr>
+  </tfoot>
+</table>
+</div> <!-- scroll -->
+
+
+BOXPARAM: column=left
+BOXSCRIPT:

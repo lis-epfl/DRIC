@@ -1,0 +1,82 @@
+BOX:
+BOXHEAD:
+<h3 class="box-title">Mavlink message sender</h3>
+
+
+BOXBODY:
+
+<div style="overflow-x:auto;overflow-y:auto;height: 250px;">
+
+<table id="Mav_table" class="table table-bordered table-striped" style="color:black;">
+
+  <tbody>
+
+    <tr>
+    	<td><h5>Target_system</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_target_system"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Target_component</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_target_component"></td>
+    </tr>  <!-- if Traget Component = 'ALL' or 'all', send a 0 -->
+
+    <tr>
+    	<td><h5>Command (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_command"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Confirmation</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_confirmation"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Parameter 1 (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_param1"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Parameter 2 (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_param2"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Parameter 3 (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_param3"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Parameter 4 (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_param4"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Parameter 5 (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_param5"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Parameter 6 (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_param6"></td>
+    </tr>
+
+    <tr>
+    	<td><h5>Parameter 7 (MAV_CMD enum)</h5></td>
+    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_param7"></td>
+    </tr>
+    
+  </tbody>
+
+</table>
+
+<button id="send_mav_btn" type="submit" class="btn btn-primary btn-sm pull-right">Send command</button>
+
+</div> <!-- scroll -->
+
+
+
+
+BOXPARAM: column=right
+
+BOXSCRIPT: mavlink_sender.js
