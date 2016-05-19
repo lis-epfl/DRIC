@@ -9,7 +9,7 @@ BOXBODY:
 
     <tr>
       <th>Parameters</th>
-      <th>Values</th>
+      <th>frequency</th>
     </tr>
 
   </thead>
@@ -18,58 +18,58 @@ BOXBODY:
   <tbody>
 
     <tr><td>
-        ATTITUDE</td><td><div class='some_random_things' id ='graph_data_ATTITUDE'>SALUT</div>
+        ATTITUDE</td><td><div class='some_random_things' id ='graph_data_ATTITUDE'>0 Hz</div>
     </td></tr>
     <tr><td>
-        ATTITUDE_QUATERNION</td><td><div class='some_random_things' id ='graph_data_ATTITUDE_QUATERNION'>SALUT</div>
+        ATTITUDE_QUATERNION</td><td><div class='some_random_things' id ='graph_data_ATTITUDE_QUATERNION'>0 Hz</div>
     </td></tr>
     <tr><td>
-        AUTOPILOT_VERSION</td><td><div class='some_random_things' id ='graph_data_AUTOPILOT_VERSION'>SALUT</div>
+        AUTOPILOT_VERSION</td><td><div class='some_random_things' id ='graph_data_AUTOPILOT_VERSION'>0 Hz</div>
     </td></tr>
     <tr><td>
-        COMMAND_ACK</td><td><div class='some_random_things' id ='graph_data_COMMAND_ACK'>SALUT</div>
+        COMMAND_ACK</td><td><div class='some_random_things' id ='graph_data_COMMAND_ACK'>0 Hz</div>
     </td></tr>
     <tr><td>
-        DISTANCE_SENSOR</td><td><div class='some_random_things' id ='graph_data_DISTANCE_SENSOR'>SALUT</div>
+        DISTANCE_SENSOR</td><td><div class='some_random_things' id ='graph_data_DISTANCE_SENSOR'>0 Hz</div>
     </td></tr>
     <tr><td>
-        GLOBAL_POSITION_INT</td><td><div class='some_random_things' id ='graph_data_GLOBAL_POSITION_INT'>SALUT</div>
+        GLOBAL_POSITION_INT</td><td><div class='some_random_things' id ='graph_data_GLOBAL_POSITION_INT'>0 Hz</div>
     </td></tr>
     <tr><td>
-        GPS_RAW_INT</td><td><div class='some_random_things' id ='graph_data_GPS_RAW_INT'>SALUT</div>
+        GPS_RAW_INT</td><td><div class='some_random_things' id ='graph_data_GPS_RAW_INT'>0 Hz</div>
     </td></tr>
     <tr><td>
-        HEARTBEAT</td><td><div class='some_random_things' id ='graph_data_HEARTBEAT'>SALUT</div>
+        HEARTBEAT</td><td><div class='some_random_things' id ='graph_data_HEARTBEAT'>0 Hz</div>
     </td></tr>
     <tr><td>
-        LOCAL_POSITION_NED</td><td><div class='some_random_things' id ='graph_data_LOCAL_POSITION_NED'>SALUT</div>
+        LOCAL_POSITION_NED</td><td><div class='some_random_things' id ='graph_data_LOCAL_POSITION_NED'>0 Hz</div>
     </td></tr>
     <tr><td>
-        LOCAL_POSITION_NED_COV</td><td><div class='some_random_things' id ='graph_data_LOCAL_POSITION_NED_COV'>SALUT</div>
+        LOCAL_POSITION_NED_COV</td><td><div class='some_random_things' id ='graph_data_LOCAL_POSITION_NED_COV'>0 Hz</div>
     </td></tr>
     <tr><td>
-        NAMED_VALUE_FLOAT</td><td><div class='some_random_things' id ='graph_data_NAMED_VALUE_FLOAT'>SALUT</div>
+        NAMED_VALUE_FLOAT</td><td><div class='some_random_things' id ='graph_data_NAMED_VALUE_FLOAT'>0 Hz</div>
     </td></tr>
     <tr><td>
-        RC_CHANNELS_RAW</td><td><div class='some_random_things' id ='graph_data_RC_CHANNELS_RAW'>SALUT</div>
+        RC_CHANNELS_RAW</td><td><div class='some_random_things' id ='graph_data_RC_CHANNELS_RAW'>0 Hz</div>
     </td></tr>
     <tr><td>
-        RC_CHANNELS_SCALED</td><td><div class='some_random_things' id ='graph_data_RC_CHANNELS_SCALED'>SALUT</div>
+        RC_CHANNELS_SCALED</td><td><div class='some_random_things' id ='graph_data_RC_CHANNELS_SCALED'>0 Hz</div>
     </td></tr>
     <tr><td>
-        SCALED_IMU</td><td><div class='some_random_things' id ='graph_data_SCALED_IMU'>SALUT</div>
+        SCALED_IMU</td><td><div class='some_random_things' id ='graph_data_SCALED_IMU'>0 Hz</div>
     </td></tr>
     <tr><td>
-        SCALED_PRESSURE</td><td><div class='some_random_things' id ='graph_data_SCALED_PRESSURE'>SALUT</div>
+        SCALED_PRESSURE</td><td><div class='some_random_things' id ='graph_data_SCALED_PRESSURE'>0 Hz</div>
     </td></tr>
     <tr><td>
-        SERVO_OUTPUT_RAW</td><td><div class='some_random_things' id ='graph_data_SERVO_OUTPUT_RAW'>SALUT</div>
+        SERVO_OUTPUT_RAW</td><td><div class='some_random_things' id ='graph_data_SERVO_OUTPUT_RAW'>0 Hz</div>
     </td></tr>
     <tr><td>
-        SYS_STATUS</td><td><div class='some_random_things' id ='graph_data_SYS_STATUS'>SALUT</div>
+        SYS_STATUS</td><td><div class='some_random_things' id ='graph_data_SYS_STATUS'>0 Hz</div>
     </td></tr>
     <tr><td>
-        VFR_HUD</td><td><div class='some_random_things' id ='graph_data_VFR_HUD'>SALUT</div>
+        VFR_HUD</td><td><div class='some_random_things' id ='graph_data_VFR_HUD'>0 Hz</div>
     </td></tr>
     
   </tbody>
@@ -77,7 +77,7 @@ BOXBODY:
     <tr>
 
       <th>Parameters</th>
-      <th>Values</th>
+      <th>Frequency</th>
 
     </tr>
   </tfoot>

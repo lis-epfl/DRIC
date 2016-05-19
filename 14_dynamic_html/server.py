@@ -1,5 +1,3 @@
-
-
 #   ### import ###
 
 # system lib
@@ -57,7 +55,7 @@ def main():
                             'server.socket_port': 8080})
     
     print 'waiting for drone'
-    vehicle = dronekit.connect("udp:localhost:14550", rate=20)    # for local simulated drone
+    vehicle = dronekit.connect("udp:localhost:14550", rate=200, heartbeat_timeout=0)    # for local simulated drone
     # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
     print 'drone found, waiting ready'
     vehicle.wait_ready()
@@ -65,8 +63,8 @@ def main():
 
     vehicle.add_attribute_listener('armed', arm_callback)
     vehicle.add_message_listener('*', msg_handler)
-    # test()
-    # threading.Timer(5, send_plot_message).start() # start in 5 seconds
+    # test()    
+    threading.Timer(5, send_plot_message).start() # start in 5 seconds
 
     conf = {
         '/':
@@ -146,10 +144,9 @@ def send_IP(client='everyone'):
     print 'sent IP to ', client
 
 # # def send_
-# def send_plot_message():
-
-
-#     threading.Timer(5, send_plot_message).start() # every 5 seconds
+def send_plot_message():
+    send_data('GRAPH_DATA', [msg_listener])
+    threading.Timer(5, send_plot_message).start() # every 5 seconds
 
 
 def test():

@@ -9,6 +9,7 @@ var msg_tab = {
         'SET_MAIN_CLIENT'   : 6,    // 0 value, set the client as the main client
         'SET_OBSERVER'      : 7,    // 0 value, unset the client as the main client (a client is by default observer)
         'ASK_CHANGE'        : 8,    // 1 value, this message expect an answer type 110, it carry a code that NEED to be transmit back with the answer
+        'GRAPH_DATA'        : 9,    // 1 value : the entire dictionnary msg_listenner
 
         //client sending stuff
         'SWITCH_ARM'        : 100,  // no value

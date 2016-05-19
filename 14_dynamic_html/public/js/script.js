@@ -5,6 +5,7 @@ $(document).ready(function()
     var ws = new WebSocket(wr_adr);
 
     var main = false;
+    var test = 0;
 
     // var plot_visible = false;
     // var plot_rate = 80; //in ms
@@ -13,10 +14,10 @@ $(document).ready(function()
 
     var plot_data = 
     {
-        number      : 1,
+        number      : 0,
         dataSet     : anychart.data.set([]), // x, y1,y2,y3,y4
         visible     : false,
-        rate        : 100, // in ms
+        rate        : 2000, // in ms
         time_start  : new Date().getTime()
     }
 
@@ -48,14 +49,14 @@ $(document).ready(function()
                 else
                     plot_data.number += 1;
 
-                // console.log(msg.data);
+                console.log(msg.data);
 
 
 
-                plot_data.dataSet.append([String(inSeconds), (msg.data[0]), 
-                                                             (msg.data[1]), 
-                                                             (msg.data[2]),
-                                                             (msg.data[3])]);
+                // plot_data.dataSet.append([String(inSeconds), (msg.data[0]), 
+                //                                              (msg.data[1]), 
+                //                                              (msg.data[2]),
+                //                                              (msg.data[3])]);
 
                 // console.log(plot_data.dataSet);
 
@@ -152,6 +153,15 @@ $(document).ready(function()
                     sendData('ANSW_CHANGE_STATUS', [ msg.data[0], answer ]);
                 }
 
+            case msg_tab['GRAPH_DATA']:
+                console.log('receive the big dictionnary of the graph data');
+                for (element in msg.data[0])
+                {
+                    // console.log('freq of ' + element + ':' +msg.data[0][element][1]);
+                    document.getElementById('graph_data_' + element).childNodes[0].nodeValue = String(msg.data[0][element][1]) + ' Hz';
+                }
+            break;
+
             default:
                 console.log("got unknown message: " + evt.data);
             break;
@@ -172,6 +182,8 @@ $(document).ready(function()
 
         sendData('GET_OBP', ['ALL']);
         sendData('ASK_CLIENT_STATUS', []);
+
+        
     };
 
     ws.onclose = function(evt) //when the client is closing
@@ -364,6 +376,18 @@ $(document).ready(function()
             sendData('PLOT_RATE', [plot_data.rate / 1000.0] );
             console.log('sent start sending data');
         }
+
+        if (plot_data.number >= 5)
+            plot_data.dataSet.remove(0);
+        else
+            plot_data.number += 1;
+
+        plot_data.dataSet.append([String(test), (test), 
+                                             (test), 
+                                             (test),
+                                             (test)]);
+        test +=1;
+
     });
 
     window.onresize = function() {
