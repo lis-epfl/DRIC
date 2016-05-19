@@ -281,17 +281,44 @@ $(document).ready(function()
 
     $("#client_status_alert").click(function()
     {
-        array =  document.getElementsByClassName('password_prompt');
+        if (!main)
+        {
+            array =  document.getElementsByClassName('password_prompt');
 
-        for (var i = 0 ; i< array.length ; i++)
-            array[i].style.display = 'block';
+            for (var i = 0 ; i< array.length ; i++)
+                array[i].style.visibility = 'visible';
 
 
-        // document.getElementById('input_password_div').style.display = 'block';
-
-        // sendData('SWITCH_STATE', []);
-        // console.log(a);
+            document.getElementById('input_password_div').style.visibility = 'visible';
+        }
+        else
+            sendData('SWITCH_STATE', ['']);
     })
+
+    $("#btn_password_cancel").click(function()
+    {
+        // clear the input 
+        document.getElementById('inp_password').value = '';
+
+        // hide all the element
+        for (var i = 0 ; i< array.length ; i++)
+            array[i].style.visibility = 'hidden';
+        document.getElementById('input_password_div').style.visibility = 'hidden';
+    })
+
+    $("#btn_password_ok").click(function()
+    {
+        sendData('SWITCH_STATE', [document.getElementById('inp_password').value]);
+
+        $("#btn_password_cancel").click();
+    })
+
+    $('#inp_password').on('keypress', function (event) {
+        if (event.which == 13) //enter pressed
+        {
+            $("#btn_password_ok").click();
+        }
+    }); 
 
     $("#rate_id").change(function()
     { //new onboard is selected

@@ -95,7 +95,8 @@ html, body
   z-index:999;
   background-color: rgba(0,0,0,0.5);
 
-  display: none;
+  visibility:hidden;
+  /*display: none;*/
 }
 
 #input_password_div
@@ -111,17 +112,22 @@ html, body
   /*z-index=201;*/
   /*opacity: 0.5;*/
 
-  /*visibility: visible;*/
-  position:relative;
+  visibility: hidden;
+
+  color:black;
+  position:absolute;
   left:35%;
   top:35%;
 
-  width:30%; 
-  height:30%; 
-  background-color:white; 
-  z-index:1000; 
+  width:20%; 
+  height:20%; 
+  background-color:white;
+  z-index:1000;
 
-  display:none;
+
+  /*display:none;*/
+
+
 /*  top:0px; 
   left:0px;*/
 

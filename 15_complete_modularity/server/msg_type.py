@@ -32,7 +32,8 @@ msg_tab = {
 
 msg_tab_inv = {v: k for (k, v) in msg_tab.items()}
 
-password = 'LISLIS'
+# list of all the password that allow a client to become Controller
+password = ['LISLIS', 'MavRic4Ever']
 
 #list of the onboard parameter (OBP) :
 

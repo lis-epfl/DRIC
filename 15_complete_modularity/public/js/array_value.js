@@ -22,7 +22,7 @@ var msg_tab = {
     'GET_LOC'           : 105, // 1 value : if -1, just want to get the coord, is >0, want to get a this period the coord
     'GET_OBP'           : 106, // 1 value, the OBP (string), if the OBP is 'ALL', then the server will send 'OBP_VALUE_ALL' 
     'SET_OBP'           : 107, // 2 values, the OBP (string) and the float value of the OBP to change
-    'SWITCH_STATE'      : 108, // 0 value, client ask to become an observer or a controller
+    'SWITCH_STATE'      : 108, // 1 value password if client want to become controller, or '' if client want to become observer
     'ASK_CLIENT_STATUS' : 109, // 1 value, ask what is the client status, nedd to transmit a code that will be returned
     'ANSW_CHANGE_STATUS': 110, // 2 values : 1st: code that is transmit back, 2nd: true or false to the answer of 'ASK_CHANGE'
     'MAVLINK_MESSAGE'   : 111, //11 values of the mavlink message (see .message_factory.command_long_send? dronekit doc)

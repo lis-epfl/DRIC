@@ -36,7 +36,7 @@ function initMap() {
 
 function click_cb(lat, lng)
 {
-    alert("Latitude: " + lat + "\r\nLongitude: " +lng);
+    // alert("Latitude: " + lat + "\r\nLongitude: " +lng);
 }
 
 function set_drone_pos(lat, lng)

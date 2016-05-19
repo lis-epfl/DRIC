@@ -30,7 +30,7 @@ import dronekit
 import json
 import plotly
 
-from server.msg_type import msg_tab, msg_tab_inv, msg_listener
+from server.msg_type import msg_tab, msg_tab_inv, msg_listener, password
 from server.html_maker import get_html_code
 
 # usefull function
@@ -419,7 +419,7 @@ class WebSocketHandler(WebSocket):
                 self.is_main_client = False
                 self.send_client_status(True)
                 
-            elif data[0] == password:
+            elif data[0] in password:
                 self.is_main_client = True
                 self.send_client_status(True)
 
