@@ -426,50 +426,35 @@ class WebSocketHandler(WebSocket):
             else:
                 self.send_client_status(False)
 
-            # if self.is_main_client:
-            #     #if the guy is the main and want to become observer, no need to ask confirmation
-            #     new_main_client = cherrypy.engine.publish('switch-state', self.client_code).pop()
-
-            #     if new_main_client == -1: # it failed
-            #         self.send_client_status(new_main_client, False)
-            #     else: #it success
-            #         self.send_client_status(new_main_client, True) #send both new status, if no status changed, one is send
-
-            # else:
-            #     old_main = cherrypy.engine.publish('get_main-client').pop()
-            #     send_data('ASK_CHANGE', [self.client_code], old_main)
-
-
-        # elif code == msg_tab['ANSW_CHANGE_STATUS']: #data[0] is the client code, data[1] is the answer: true or false
-            # if len(data) != 2:
-            #     print 'error in package type ANSW_CHANGE_STATUS'
-            #     return
-
-            # elif data[1] == False: # main said No to change
-            #     print 'Controler refuse to switch'
-            #     send_data('SET_OBSERVER', [False], data[0]) #sending status OBSERVER to the guy that wanted to change
-
-            # elif data[1] == True: # main accept !
-            #     print 'Switching observer and controler'
-
-            #     success = cherrypy.engine.publish('switch-state', data[0]).pop()
-
-            #     #now the old main and new observer is self.client_code and success
-            #     #now the old observer and new main is data[0]
-
-            #     if success == -1:   #it failed
-            #         self.send_client_status(data[0], False)
-            #     else:
-            #         self.send_client_status(data[0], True)
-            pass
-
         elif code == msg_tab['ASK_CLIENT_STATUS']:
             self.send_client_status()
 
         elif code == msg_tab['MAVLINK_MESSAGE']:
             if self.is_main_client:
+                if type(data[2]) == str:
+                    data[2] = MAV_CMD[data[2]]
+
+                elif type(data[2]) != int:
+                    return
+
                 vehicle.message_factory.command_long_send(int(data[0]), int(data[1]), int(data[2]), int(data[3]), float(data[4]), float(data[5]), 
                                                           float(data[6]), float(data[7]), float(data[8]), float(data[9]), float(data[10]))
+
+                vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
+                send_data('MAV_MSG_CONF', [])
+            else:
+                pass #just ignore
+
+        elif code == msg_tab['MAVLINK_MSG_SHORT']:
+            if self.is_main_client:
+                if type(data[0]) == str:
+                    data[0] = MAV_CMD[data[0]]
+
+                elif type(data[0]) != int:
+                    return
+
+                vehicle.message_factory.command_long_send(target, 0, int(data[0]), int(data[1]), int(data[2]), int(data[3]), 
+                                                          float(data[4]), float(data[5]), float(data[6]), float(data[7]), float(data[8]))
 
                 vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
                 send_data('MAV_MSG_CONF', [])

@@ -5,6 +5,7 @@ BOXHEAD:
 
 BOXBODY:
 
+<a href="https://pixhawk.ethz.ch/mavlink/">See Complete list of MAV_CMD</a>
 <div style="overflow-x:auto;overflow-y:auto;height: 250px;">
 
 <table id="Mav_table" class="table table-bordered table-striped" style="color:black;">

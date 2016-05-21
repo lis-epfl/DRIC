@@ -55,8 +55,23 @@ def get_html_code(adr):
     # read part1
     ret += file('server/page/part1.html', 'r').read().format(adr)
 
+    # insert msg_tab from python
+    ret+='\n\n'
+    a = sorted(msg_tab.items(), key= lambda msg: msg[1])
+
+    ret+= '<script>\n  var msg_tab = {\n'
+    for element in a:
+        ret+="    '" + str(element[0]) + "' : " + str(element[1]) + ',\n'
+    ret+='  };\n'
+
+    ret+="""
+  var reverse_msg_tab = {};
+  for (element in msg_tab)
+    reverse_msg_tab[ msg_tab[element] ] = element;\n</script>"""
+
+
     # insert js files
-    ret += '\n\n'  
+    ret += '\n\n'
     for element in element_js:
         ret+='<script src="/static/js/box/' + element + '"></script>'
         ret+='\n'

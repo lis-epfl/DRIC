@@ -24,44 +24,128 @@ msg_tab = {
     'SET_OBP'           : 107, # 2 values, the OBP (string) and the float value of the OBP to change
     'SWITCH_STATE'      : 108, # 1 value password if client want to become controller, or '' if client want to become observer
     'ASK_CLIENT_STATUS' : 109, # 1 value, ask what is the client status, nedd to transmit a code that will be returned
-    'MAVLINK_MESSAGE'   : 110, # 11 values of the mavlink message (see .message_factory.command_long_send? dronekit doc)
-    'GET_GRAPH_DATA'    : 111, # no value 
-
+    'MAVLINK_MESSAGE'   : 110, # 11 values of the mavlink message (see .message_factory.command_long_send? dronekit doc or below)
+    'MAVLINK_MSG_SHORT' : 111, # 9 values same as MAVLINK_MESSAGE but no need to specified the 2 first parameter, they are automatically set, see below
+    'GET_GRAPH_DATA'    : 112, # no value 
 }
+
+# MAVLINK_MESSAGE parameter:
+#  1: Target_system         (with MAVLINK_MSG_SHORT : set to the drone ID automatically)
+#  2: Target_component      (with MAVLINK_MSG_SHORT : set to 0 automatically)
+#  3: Command:              (it's a MAV_CMD enum, see below)
+#  4: Confirmation
+#  5: Parameter 1
+#  6: Parameter 2
+#  7: Parameter 3
+#  8: Parameter 4
+#  9: Parameter 5
+#  10: Parameter 6
+#  11: Parameter 7
+
+# MAV_CMD enum:
+# see complete list at  https://pixhawk.ethz.ch/mavlink/ 
+MAV_CMD = {
+    'MAV_CMD_NAV_WAYPOINT'                  : 16,   
+    'MAV_CMD_NAV_LOITER_UNLIM'              : 17,   
+    'MAV_CMD_NAV_LOITER_TURNS'              : 18,   
+    'MAV_CMD_NAV_LOITER_TIME'               : 19,   
+    'MAV_CMD_NAV_RETURN_TO_LAUNCH'          : 20,   
+    'MAV_CMD_NAV_LAND'                      : 21,   
+    'MAV_CMD_NAV_TAKEOFF'                   : 22,   
+    'MAV_CMD_NAV_LAND_LOCAL'                : 23,   
+    'MAV_CMD_NAV_TAKEOFF_LOCAL'             : 24,   
+    'MAV_CMD_NAV_FOLLOW'                    : 25,   
+    'MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT'   : 30,   
+    'MAV_CMD_NAV_LOITER_TO_ALT'             : 31,   
+    'MAV_CMD_DO_FOLLOW'                     : 32,   
+    'MAV_CMD_DO_FOLLOW_REPOSITION'          : 33,   
+    'MAV_CMD_NAV_ROI'                       : 80,   
+    'MAV_CMD_NAV_PATHPLANNING'              : 81,   
+    'MAV_CMD_NAV_SPLINE_WAYPOINT'           : 82,   
+    'MAV_CMD_NAV_VTOL_TAKEOFF'              : 84,   
+    'MAV_CMD_NAV_VTOL_LAND'                 : 85,   
+    'MAV_CMD_NAV_GUIDED_ENABLE'             : 92,   
+    'MAV_CMD_NAV_DELAY'                     : 93,   
+    'MAV_CMD_NAV_LAST'                      : 95,   
+    'MAV_CMD_CONDITION_DELAY'               : 112,  
+    'MAV_CMD_CONDITION_CHANGE_ALT'          : 113,  
+    'MAV_CMD_CONDITION_DISTANCE'            : 114,  
+    'MAV_CMD_CONDITION_YAW'                 : 115,  
+    'MAV_CMD_CONDITION_LAST'                : 159,  
+    'MAV_CMD_DO_SET_MODE'                   : 176,  
+    'MAV_CMD_DO_JUMP'                       : 177,  
+    'MAV_CMD_DO_CHANGE_SPEED'               : 178,  
+    'MAV_CMD_DO_SET_HOME'                   : 179,  
+    'MAV_CMD_DO_SET_PARAMETER'              : 180,  
+    'MAV_CMD_DO_SET_RELAY'                  : 181,  
+    'MAV_CMD_DO_REPEAT_RELAY'               : 182,  
+    'MAV_CMD_DO_SET_SERVO'                  : 183,  
+    'MAV_CMD_DO_REPEAT_SERVO'               : 184,  
+    'MAV_CMD_DO_FLIGHTTERMINATION'          : 185,  
+    'MAV_CMD_DO_LAND_START'                 : 189,  
+    'MAV_CMD_DO_RALLY_LAND'                 : 190,  
+    'MAV_CMD_DO_GO_AROUND'                  : 191,  
+    'MAV_CMD_DO_REPOSITION'                 : 192,  
+    'MAV_CMD_DO_PAUSE_CONTINUE'             : 193,  
+    'MAV_CMD_DO_CONTROL_VIDEO'              : 200,  
+    'MAV_CMD_DO_SET_ROI'                    : 201,  
+    'MAV_CMD_DO_DIGICAM_CONFIGURE'          : 202,  
+    'MAV_CMD_DO_DIGICAM_CONTROL'            : 203,  
+    'MAV_CMD_DO_MOUNT_CONFIGURE'            : 204,  
+    'MAV_CMD_DO_MOUNT_CONTROL'              : 205,  
+    'MAV_CMD_DO_SET_CAM_TRIGG_DIST'         : 206,  
+    'MAV_CMD_DO_FENCE_ENABLE'               : 207,  
+    'MAV_CMD_DO_PARACHUTE'                  : 208,  
+    'MAV_CMD_DO_INVERTED_FLIGHT'            : 210,  
+    'MAV_CMD_DO_MOUNT_CONTROL_QUAT'         : 220,  
+    'MAV_CMD_DO_GUIDED_MASTER'              : 221,  
+    'MAV_CMD_DO_GUIDED_LIMITS'              : 222,  
+    'MAV_CMD_DO_LAST'                       : 240,  
+    'MAV_CMD_PREFLIGHT_CALIBRATION'         : 241,  
+    'MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS'  : 242,  
+    'MAV_CMD_PREFLIGHT_UAVCAN'              : 243,  
+    'MAV_CMD_PREFLIGHT_STORAGE'             : 245,  
+    'MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN'     : 246,  
+    'MAV_CMD_OVERRIDE_GOTO'                 : 252,  
+    'MAV_CMD_MISSION_START'                 : 300,  
+    'MAV_CMD_COMPONENT_ARM_DISARM'          : 400,  
+    'MAV_CMD_GET_HOME_POSITION'             : 410,  
+    'MAV_CMD_START_RX_PAIR'                 : 500,  
+    'MAV_CMD_GET_MESSAGE_INTERVAL'          : 510,  
+    'MAV_CMD_SET_MESSAGE_INTERVAL'          : 511,  
+    'MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIE' : 520,  
+    'MAV_CMD_IMAGE_START_CAPTURE'           : 2000, 
+    'MAV_CMD_IMAGE_STOP_CAPTURE'            : 2001, 
+    'MAV_CMD_DO_TRIGGER_CONTROL'            : 2003, 
+    'MAV_CMD_VIDEO_START_CAPTURE'           : 2500, 
+    'MAV_CMD_VIDEO_STOP_CAPTURE'            : 2501, 
+    'MAV_CMD_PANORAMA_CREATE'               : 2800, 
+    'MAV_CMD_DO_VTOL_TRANSITION'            : 3000, 
+    'MAV_CMD_PAYLOAD_PREPARE_DEPLOY'        : 30001,        
+    'MAV_CMD_PAYLOAD_CONTROL_DEPLOY'        : 30002,        
+    'MAV_CMD_WAYPOINT_USER_1'               : 31000,        
+    'MAV_CMD_WAYPOINT_USER_2'               : 31001,        
+    'MAV_CMD_WAYPOINT_USER_3'               : 31002,        
+    'MAV_CMD_WAYPOINT_USER_4'               : 31003,        
+    'MAV_CMD_WAYPOINT_USER_5'               : 31004,        
+    'MAV_CMD_SPATIAL_USER_1'                : 31005,        
+    'MAV_CMD_SPATIAL_USER_2'                : 31006,        
+    'MAV_CMD_SPATIAL_USER_3'                : 31007,        
+    'MAV_CMD_SPATIAL_USER_4'                : 31008,        
+    'MAV_CMD_SPATIAL_USER_5'                : 31009,        
+    'MAV_CMD_USER_1'                        : 31010,        
+    'MAV_CMD_USER_2'                        : 31011,        
+    'MAV_CMD_USER_3'                        : 31012,        
+    'MAV_CMD_USER_4'                        : 31013,        
+    'MAV_CMD_USER_5'                        : 31014
+    }
+
 
 msg_tab_inv = {v: k for (k, v) in msg_tab.items()}
 
 # list of all the password that allow a client to become Controller
 password = ['LISLIS', 'MavRic4Ever']
 
-#list of the onboard parameter (OBP) :
-
-# will contain :
-
-#     'BIAS_ACC_X', 'BIAS_ACC_Y', 'BIAS_ACC_Z',
-#     'BIAS_GYRO_X', 'BIAS_GYRO_Y','BIAS_GYRO_Z',
-#     'BIAS_MAG_X','BIAS_MAG_Y','BIAS_MAG_Z',
-#     'COM_RC_IN_MODE','CTRL_CTRL_SRC','ID_SYSID',
-#     'PITCH_R_D_CLIP','PITCH_R_I_CLIP',
-#     'PITCH_R_KD','PITCH_R_KI','PITCH_R_KP',
-#     'POS_KP_ALT_BARO',
-#     'POS_KP_POS0','POS_KP_POS1','POS_KP_POS2',
-#     'POS_KP_VELB',
-#     'QF_KP_ACC','QF_KP_MAG',
-#     'ROLL_R_D_CLIP',
-#     'ROLL_R_I_CLIP',
-#     'ROLL_R_KP','ROLL_R_KI','ROLL_R_KD',
-#     'SCALE_ACC_X','SCALE_ACC_Y','SCALE_ACC_Z',
-#     'SCALE_GYRO_X','SCALE_GYRO_Y','SCALE_GYRO_Z',
-#     'SCALE_MAG_X','SCALE_MAG_Y','SCALE_MAG_Z',
-#     'THRV_I_PREG','THRV_KP','THRV_KD','THRV_SOFT',
-#     'VEL_CLIMBRATE','VEL_CRUISESPEED','VEL_DIST2VEL',
-#     'VEL_HOVER_PGAIN','VEL_HOVER_DGAIN',
-#     'VEL_SOFTZONE',
-#     'VEL_WPT_PGAIN','VEL_WPT_DGAIN',
-#     'YAW_R_D_CLIP','YAW_R_I_CLIP',
-#     'YAW_R_KP','YAW_R_KI','YAW_R_KD',
-#     'YAW_R_P_CLMN','YAW_R_P_CLMX',
 
 msg_listener = {
     # initialize to empty but filled during the program, it contain the following structur:
