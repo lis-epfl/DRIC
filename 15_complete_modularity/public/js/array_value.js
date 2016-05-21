@@ -10,8 +10,8 @@ var msg_tab = {
     'OBP_VALUE_ALL'     : 5, // ~57 dictionnary: a list of all the float value. The array looks like: [{'OBP1' : value}, {'OBP2' : value}, ...]
     'SET_MAIN_CLIENT'   : 6, // 1 value, set the client as the main client, if value is true, an alert is launch in the client
     'SET_OBSERVER'      : 7, // 1 value, unset the client as the main client (a client is by default observer), if data is true:alert
-    'ASK_CHANGE'        : 8, // 1 value, this message expect an answer type 110, it carry a code that NEED to be transmit back with the answer
-    'GRAPH_DATA'        : 9, // 1 value : the entire dictionnary msg_listenner
+    'GRAPH_DATA'        : 8, // 1 value : the entire dictionnary msg_listenner
+    'MAV_MSG_CONF'      : 9, // 0 value : confirm that the drone receive the order
 
     //client sending stuff
     'SWITCH_ARM'        : 100, // no value
@@ -24,37 +24,11 @@ var msg_tab = {
     'SET_OBP'           : 107, // 2 values, the OBP (string) and the float value of the OBP to change
     'SWITCH_STATE'      : 108, // 1 value password if client want to become controller, or '' if client want to become observer
     'ASK_CLIENT_STATUS' : 109, // 1 value, ask what is the client status, nedd to transmit a code that will be returned
-    'ANSW_CHANGE_STATUS': 110, // 2 values : 1st: code that is transmit back, 2nd: true or false to the answer of 'ASK_CHANGE'
-    'MAVLINK_MESSAGE'   : 111, //11 values of the mavlink message (see .message_factory.command_long_send? dronekit doc)
-    'GET_GRAPH_DATA'    : 112, // no value
+    'MAVLINK_MESSAGE'   : 110, //11 values of the mavlink message (see .message_factory.command_long_send? dronekit doc)
+    'GET_GRAPH_DATA'    : 111, // no value
 
     };
 
-// var OBP_tab = [];
-
-    // will contain :
-
-    // 'BIAS_ACC_X', 'BIAS_ACC_Y', 'BIAS_ACC_Z',
-    // 'BIAS_GYRO_X', 'BIAS_GYRO_Y','BIAS_GYRO_Z',
-    // 'BIAS_MAG_X','BIAS_MAG_Y','BIAS_MAG_Z',
-    // 'COM_RC_IN_MODE','CTRL_CTRL_SRC','ID_SYSID',
-    // 'PITCH_R_D_CLIP','PITCH_R_I_CLIP',
-    // 'PITCH_R_KD','PITCH_R_KI','PITCH_R_KP',
-    // 'POS_KP_ALT_BARO',
-    // 'POS_KP_POS0','POS_KP_POS1','POS_KP_POS2',
-    // 'POS_KP_VELB',
-    // 'QF_KP_ACC','QF_KP_MAG',
-    // 'ROLL_R_D_CLIP',
-    // 'ROLL_R_I_CLIP',
-    // 'ROLL_R_KP','ROLL_R_KI','ROLL_R_KD',
-    // 'SCALE_ACC_X','SCALE_ACC_Y','SCALE_ACC_Z',
-    // 'SCALE_GYRO_X','SCALE_GYRO_Y','SCALE_GYRO_Z',
-    // 'SCALE_MAG_X','SCALE_MAG_Y','SCALE_MAG_Z',
-    // 'THRV_I_PREG','THRV_KP','THRV_KD','THRV_SOFT',
-    // 'VEL_CLIMBRATE','VEL_CRUISESPEED','VEL_DIST2VEL',
-    // 'VEL_HOVER_PGAIN','VEL_HOVER_DGAIN',
-    // 'VEL_SOFTZONE',
-    // 'VEL_WPT_PGAIN','VEL_WPT_DGAIN',
-    // 'YAW_R_D_CLIP','YAW_R_I_CLIP',
-    // 'YAW_R_KP','YAW_R_KI','YAW_R_KD',
-    // 'YAW_R_P_CLMN','YAW_R_P_CLMX',
+var reverse_msg_tab = {};
+for (element in msg_tab)
+    reverse_msg_tab[ msg_tab[element] ] = element;

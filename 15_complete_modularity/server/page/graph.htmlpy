@@ -3,8 +3,10 @@ BOXHEAD:
 <h3 class="box-title">Graph</h3>
 
 BOXBODY:
-<button id="show_plot" type="submit" class="btn btn-primary btn-sm">Play</button>
+<button id="show_plot_btn" type="submit" class="btn btn-primary btn-sm">Play</button>
 <div id='plot' style="height:300px"></div>
 
 BOXPARAM: column=right
-BOXSCRIPT:
+BOXFILE: graph_anychart.js
+BOXCALLBACK:
+PLOT_DATA add_point_graph

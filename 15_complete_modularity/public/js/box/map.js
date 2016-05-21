@@ -1,6 +1,7 @@
 var drone_marker;
 
-function initMap() {
+function initMap() 
+{
     var mapDiv = document.getElementById('map');
 
     var position = {lat: 46.518524, lng: 6.567319};
@@ -39,7 +40,28 @@ function click_cb(lat, lng)
     // alert("Latitude: " + lat + "\r\nLongitude: " +lng);
 }
 
-function set_drone_pos(lat, lng)
+// call back:
+function set_drone_pos(code, data)
 {
-    drone_marker.setPosition({lat: lat, lng: lng});
+    drone_marker.setPosition({lat: data[0], lng: data[1]});
 }
+
+$(document).ready(function() 
+{
+    $("#follow_drone_btn").click(function()
+    {
+        // alert(1);
+        if (document.getElementById("follow_drone_btn").childNodes[0].nodeValue == "follow drone")
+        {
+            // alert(2);
+            $.send_data('GET_LOC', [1.0]);
+            document.getElementById("follow_drone_btn").childNodes[0].nodeValue = "stop following drone";
+        }
+        else if (document.getElementById("follow_drone_btn").childNodes[0].nodeValue == "stop following drone")
+        {
+            // alert(3);
+            $.send_data('GET_LOC', [-1]);
+            document.getElementById("follow_drone_btn").childNodes[0].nodeValue = "follow drone";
+        }
+    });
+});

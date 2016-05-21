@@ -15,7 +15,6 @@ BOXBODY:
     </tr>
 
   </thead>
-  <tbody>
 
   <tbody id='OBparam_body'>
     
@@ -32,4 +31,7 @@ BOXBODY:
 </div> <!-- scroll -->
 
 BOXPARAM: column=right
-BOXSCRIPT:
+BOXFILE: OBparam.js
+BOXCALLBACK:
+OBP_VALUE change_OBP_value
+OBP_VALUE_ALL reset_OBP

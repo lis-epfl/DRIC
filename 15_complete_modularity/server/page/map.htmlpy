@@ -8,4 +8,6 @@ BOXBODY: style="width:100%;height:100%"
 <div id="map" style="height:500px"></div>
 
 BOXPARAM: column=left
-BOXSCRIPT:
+BOXFILE: map.js
+BOXCALLBACK:
+LOC set_drone_pos

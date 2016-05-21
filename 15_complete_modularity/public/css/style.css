@@ -10,17 +10,6 @@ body
 	color: #fff;
 }
 
-
-#map 
-{
-    /*height: 100%;
-    width:  100%;*/
-    
-/*    left: 0;
-    position: absolute;
-    top: 20%;    */
-}
-
 html, body 
 {
   height: 100%;
@@ -96,22 +85,10 @@ html, body
   background-color: rgba(0,0,0,0.5);
 
   visibility:hidden;
-  /*display: none;*/
 }
 
 #input_password_div
 {
-  /*top:10px;
-
-  width:200px;
-  height:200px; 
-  margin:auto;
-  background-color:red;*/
-
-  /*line-height: 100px;
-  /*z-index=201;*/
-  /*opacity: 0.5;*/
-
   visibility: hidden;
 
   color:black;
@@ -119,16 +96,8 @@ html, body
   left:35%;
   top:35%;
 
-  width:20%; 
-  height:20%; 
+  width:250px; 
+  height:150px; 
   background-color:white;
   z-index:1000;
-
-
-  /*display:none;*/
-
-
-/*  top:0px; 
-  left:0px;*/
-
 }

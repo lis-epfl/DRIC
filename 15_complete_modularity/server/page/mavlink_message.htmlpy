@@ -1,7 +1,7 @@
 BOX:
 BOXHEAD:
 <h3 class="box-title">Mavlink message sender</h3>
-
+<div class="alert alert-info" style="visibility:hidden;width:165px;display:inline;" id="alert_receive_mav"><i class="icon fa fa-info"></i>Change received</div>
 
 BOXBODY:
 
@@ -79,4 +79,6 @@ BOXBODY:
 
 BOXPARAM: column=right
 
-BOXSCRIPT: mavlink_sender.js
+BOXFILE: mavlink_sender.js
+BOXCALLBACK:
+MAV_MSG_CONF show_conf_receive_mav

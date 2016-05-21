@@ -405,7 +405,7 @@ class WebSocketHandler(WebSocket):
                     return
 
                 vehicle.parameters[id_str] = value
-                vehicle.commands.upload()
+                vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
                 send_data('OBP_VALUE', [ id_str, vehicle.parameters[id_str] ], 'everyone')
 
                 if vehicle.parameters[id_str] != value:
@@ -471,6 +471,8 @@ class WebSocketHandler(WebSocket):
                 vehicle.message_factory.command_long_send(int(data[0]), int(data[1]), int(data[2]), int(data[3]), float(data[4]), float(data[5]), 
                                                           float(data[6]), float(data[7]), float(data[8]), float(data[9]), float(data[10]))
 
+                vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
+                send_data('MAV_MSG_CONF', [])
             else:
                 pass #just ignore
 

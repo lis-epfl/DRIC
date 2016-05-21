@@ -30,4 +30,5 @@ BOXBODY:
 
 
 BOXPARAM: column=left
-BOXSCRIPT:
+BOXCALLBACK:
+GRAPH_DATA refresh_data_frequency
