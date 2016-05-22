@@ -30,7 +30,7 @@ import dronekit
 import json
 import plotly
 
-from server.msg_type import msg_tab, msg_tab_inv, msg_listener, password
+from server.msg_type import msg_tab, msg_tab_inv, msg_listener, password, MAV_CMD
 from server.html_maker import get_html_code
 
 # usefull function
@@ -93,6 +93,14 @@ def main():
         }
     }
     cherrypy.quickstart(Cherrypy_server(), '/', conf)
+
+
+def is_int(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
 
 
 def get_json_msg(code, data):
@@ -431,15 +439,15 @@ class WebSocketHandler(WebSocket):
 
         elif code == msg_tab['MAVLINK_MESSAGE']:
             if self.is_main_client:
-                if type(data[2]) == str:
+
+                if data[2] in MAV_CMD:
                     data[2] = MAV_CMD[data[2]]
 
-                elif type(data[2]) != int:
+                elif not is_int(data[2]):
                     return
 
                 vehicle.message_factory.command_long_send(int(data[0]), int(data[1]), int(data[2]), int(data[3]), float(data[4]), float(data[5]), 
                                                           float(data[6]), float(data[7]), float(data[8]), float(data[9]), float(data[10]))
-
                 vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
                 send_data('MAV_MSG_CONF', [])
             else:
@@ -447,11 +455,13 @@ class WebSocketHandler(WebSocket):
 
         elif code == msg_tab['MAVLINK_MSG_SHORT']:
             if self.is_main_client:
-                if type(data[0]) == str:
+                if data[0] in MAV_CMD:
                     data[0] = MAV_CMD[data[0]]
 
-                elif type(data[0]) != int:
+                elif not is_int(data[0]):
                     return
+
+                target = 0 # TODO:change that to the ID of the drone
 
                 vehicle.message_factory.command_long_send(target, 0, int(data[0]), int(data[1]), int(data[2]), int(data[3]), 
                                                           float(data[4]), float(data[5]), float(data[6]), float(data[7]), float(data[8]))
