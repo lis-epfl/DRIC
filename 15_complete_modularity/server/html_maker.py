@@ -20,10 +20,12 @@ def get_html_code(adr):
     element_js = []
     element_css = []
     call_back_array = []
+    names = []
 
     # get htmlpy file content
     for element in file_to_convert:
         (items, column, js_file, cba) = get_html_from_file(element)
+        names.append(os.path.splitext(element)[0]);
 
         if column.lower() == 'right':
             element_right.append(items)
@@ -43,7 +45,7 @@ def get_html_code(adr):
     # start filling final html :
 
     # read part0
-    ret = file('server/page/part0.html', 'r').read().format('%', '{', '}')
+    ret = file('server/page/part0.html', 'r').read()
 
     #insert css files
     ret += '\n\n' 
@@ -57,10 +59,10 @@ def get_html_code(adr):
 
     # insert msg_tab from python
     ret+='\n\n'
-    a = sorted(msg_tab.items(), key= lambda msg: msg[1])
+    msg_tab_it = sorted(msg_tab.items(), key= lambda msg: msg[1])
 
     ret+= '<script>\n  var msg_tab = {\n'
-    for element in a:
+    for element in msg_tab_it:
         ret+="    '" + str(element[0]) + "' : " + str(element[1]) + ',\n'
     ret+='  };\n'
 
@@ -89,10 +91,21 @@ def get_html_code(adr):
                 ret += func_name + ','
 
         ret = ret[:-1] + '],\n' #removing last ',' and add \n
-    ret += """}\n</script>\n\n"""
+    ret += """}\n</script>\n"""
 
     # read part2
-    ret += file('server/page/part2.html', 'r').read().format('%')
+    ret += file('server/page/part2.html', 'r').read()
+
+    for name in names:
+            ret +="""
+            <li class="active Box_handler" onclick="boxClick(this)" id="BOX_handler_""" + name + """">
+              <a href="#Box_anchor_""" + name + """">
+                <i class="fa fa-th"></i><span>""" + name + """</span>
+              </a>
+            </li>\n\n"""
+
+    # read part3
+    ret += file('server/page/part3.html', 'r').read()
 
     #insert box of the right column
     ret += '\n\n'
@@ -101,8 +114,8 @@ def get_html_code(adr):
         ret += '\n'
     ret += '\n\n'
 
-    # read part3
-    ret += file('server/page/part3.html', 'r').read()
+    # read part4
+    ret += file('server/page/part4.html', 'r').read()
 
     #insert box of the right column
     ret += '\n\n' 
@@ -111,14 +124,16 @@ def get_html_code(adr):
         ret += '\n'
     ret += '\n\n' 
 
-    # read part4
-    ret += file('server/page/part4.html', 'r').read()
+    # read part5
+    ret += file('server/page/part5.html', 'r').read()
     ret += '\n' 
 
     return ret
 
 # return the html converted html code from a .htmlpy file in /page/
 def get_html_from_file(file_):
+
+    name, extension = os.path.splitext(file_);
 
     #read file
     currentfile = file('server/page/' + file_)
@@ -138,7 +153,8 @@ def get_html_from_file(file_):
         return
 
     # adding box parameter
-    result = """<div class="box box-default" """ + lines[0][4:] + ">\n"
+    result = """<div class="box box-default" """ + lines[0][4:] + " id='BOX_" + name+ """'>
+  <a name='Box_anchor_""" + name + "'></a>"
 
     #check of the keyword 'BOXHEAD:'
     if lines[1][:8] != 'BOXHEAD:':
@@ -171,7 +187,7 @@ def get_html_from_file(file_):
         i+=1
 
     # end
-    result+= """ </div><!-- /.box-body -->\n</div><!-- /.box --> \n"""
+    result+= " </div><!-- /.box-body -->\n</div><!-- /.box --> \n"
 
     # remove space
     lines[i] = re.sub(' ', '', lines[i])

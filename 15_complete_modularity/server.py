@@ -68,8 +68,6 @@ def main():
 
     OBP_tab = sorted(vehicle.parameters.keys())
 
-
-
     # test()    
     threading.Timer(5, send_plot_message).start() # start in 5 seconds
 
@@ -307,7 +305,10 @@ class WebSocketHandler(WebSocket):
 
         self.plot = {
             'current_state' : False,
-#           'data' : [ptch, roll, yaw, 0],      # this field contain which value to plot, no working for now
+            'data' : [ ['ATTITUDE', 'pitch'], 
+                       ['ATTITUDE', 'roll'], 
+                       ['ATTITUDE', 'yaw'], 
+                       ['GLOBAL_POSITION_INT', 'alt'] ],  # this field contain which value to send for the plot
             'rate' : 0.080
         }
 
@@ -374,6 +375,10 @@ class WebSocketHandler(WebSocket):
                 self.plot['current_state'] = True
                 print 'receive order to send plot data from client ', self.client_code
                 self.send_plot_data()
+
+        elif code == msg_tab['PLOT_NEW_DATA']:
+            if len(data) == 4 and len(data[0]) == 2 and len(data[1]) == 2 and len(data[2]) == 2 and len(data[3]) == 2:
+                self.plot['data'] = data;
 
         elif code == msg_tab['GET_LOC']:
             if data[0] > 0:
@@ -498,7 +503,10 @@ class WebSocketHandler(WebSocket):
         if self.plot['current_state'] and self.terminated == False:
             global vehicle
 
-            json_msg = get_json_msg('PLOT_DATA', [vehicle.attitude.pitch, vehicle.attitude.roll, vehicle.attitude.yaw, 0])
+            json_msg = get_json_msg('PLOT_DATA',[msg_listener[self.plot['data'][0][0]][0][self.plot['data'][0][1]], 
+                                                 msg_listener[self.plot['data'][1][0]][0][self.plot['data'][1][1]], 
+                                                 msg_listener[self.plot['data'][2][0]][0][self.plot['data'][2][1]], 
+                                                 msg_listener[self.plot['data'][3][0]][0][self.plot['data'][3][1]]])
             self.send(json_msg)
 
             print 'sent one set of data'

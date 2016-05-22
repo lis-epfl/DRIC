@@ -1,4 +1,11 @@
 
+function boxClick(object)
+{
+    var id = 'BOX_' + String(object.id).substring(12);
+    console.log(id);
+    document.getElementById(id).style.display = 'block';
+}
+
 $(document).ready(function() 
 {
     var ws = new WebSocket(wr_adr);
