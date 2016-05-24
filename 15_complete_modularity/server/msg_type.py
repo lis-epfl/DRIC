@@ -17,7 +17,7 @@ msg_tab = {
     'SWITCH_ARM'        : 100, # no value
     'GET_ARM'           : 101, # no value
     'GET_IP'            : 102, # no value
-    'PLOT_RATE'         : 103, # 1 int value : the rate in seconde, if rate=0, it means 'stop sending data'
+    'PLOT_RATE'         : 103, # 1 int value : the rate in seconde, if rate=-1, it means 'stop sending data'
     'PLOT_NEW_DATA'     : 104, # 4 tab of 2 values each, 4 tab for each trace and first value for msg (e.g : 'ATTITUDE') 2nd for type (e.g : 'pitch') 
     'GET_LOC'           : 105, # 1 value : if -1, just want to get the coord, is >0, want to get a this period the coord
     'GET_OBP'           : 106, # 1 value, the OBP (string), if the OBP is 'ALL', then the server will send 'OBP_VALUE_ALL' 

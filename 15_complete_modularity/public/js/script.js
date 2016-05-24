@@ -28,12 +28,6 @@ $(document).ready(function()
 
         switch(msg.code)
         {
-            // case msg_tab['PLOT_DATA']:
-            // {
-            //     add_one_data_graph('PLOT_DATA', msg.data);
-            // }
-            // break;
-
             case msg_tab['ARM_STATE']:
 
                 if (msg.data[0] == true) // if armed
@@ -54,31 +48,6 @@ $(document).ready(function()
                 // idea: we could display it in the margin (in french : marge)
             break;
 
-            // case msg_tab['LOC']:
-
-            //     set_drone_pos('LOC', msg.data);
-            // break;
-
-            // case msg_tab['OBP_VALUE']:
-
-            //     change_OBP_value(String(msg.data[1]).substring(0,6), String(msg.data[0]))
-            // break;
-
-            // case msg_tab['OBP_VALUE_ALL']:
-
-            //     $('#OBparam_body').html('')
-            //     for ( hash in msg.data )
-            //     {
-            //         var OBP = Object.keys(msg.data[hash])[0];
-            //         var value = msg.data[hash][OBP];
-
-            //         add_OBP_to_list(value, OBP);
-            //     }
-
-            //     document.getElementById('change_alert').style.visibility = 'visible';
-            //     setTimeout(remove_OBP_alert, 800, 'change_alert');
-            // break;
-
             case msg_tab['SET_MAIN_CLIENT']:
 
                 main = true;
@@ -97,29 +66,6 @@ $(document).ready(function()
                 if (msg.data[0] && document.getElementById('checkbox_notif').checked)
                     alert('You are now an observer')
             break;
-
-            // case msg_tab['GRAPH_DATA']:
-
-            //     var keys = Object.keys(msg.data[0]).sort();
-            //     for (var element in keys)
-            //     {
-            //         element = keys[element];
-            //         var id = 'graph_data_' + element;
-            //         var value = String(Math.round(msg.data[0][element][1]*10)/10);
-
-            //         if (document.getElementById(id) == null) // if the line of the tab dosesn't exist
-            //         {  
-            //             $('#Graph_data_id').append('<tr><td>\n'+
-            //                                        element + '</td><td><div class="some_random_things" id ="'+ 
-            //                                        id + '">'+
-            //                                        value + ' Hz</div>\n</td></tr>');
-            //         }
-            //         else
-            //         {
-            //             document.getElementById(id).childNodes[0].nodeValue = value + ' Hz';
-            //         }
-            //     }
-            // break;
         }
 
         if (! (msg.code in reverse_msg_tab) )

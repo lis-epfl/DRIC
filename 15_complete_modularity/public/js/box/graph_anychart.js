@@ -22,27 +22,44 @@ var test = 0;
 //call back:
 function add_point_graph(code, data)
 {
-    // console.log("receive data to plot");
+    // // console.log("receive data to plot");
 
-    //if (plot_data.visible)
+    // if (plot_data.visible)
 
     var current = new Date().getTime();
-
     var inSeconds = Math.round((current - plot_data.time_start) /100) /10 ;
+
+
+    // var t0 = performance.now();
+
+    plot_data.dataSet.append([String(inSeconds), (data[0]), 
+                                                 (data[1]), 
+                                                 (data[2]),
+                                                 (data[3])]);
+    // // plot_data.dataSet.a[plot_data.number] = ([String(inSeconds), (data[0]), 
+    // //                                                             (data[1]), 
+    // //                                                             (data[2]),
+    // //                                                             (data[3])]);
+
+    // var t1 = performance.now();
+
+    // chart.draw();
+
+    // var t2 = performance.now();
+
 
     if (plot_data.number >= 50)
         plot_data.dataSet.remove(0);
+        // plot_data.number = 0;
     else
         plot_data.number += 1;
 
-    // console.log(msg.data);
+    // // var t2 = performance.now();
 
-    // plot_data.dataSet.append([String(inSeconds), (data[0]), 
-    //                                              (data[1]), 
-    //                                              (data[2]),
-    //                                              (data[3])]);
+    // console.log('append:', (t1 - t0).toFixed(4));
+    // console.log('redraw:', (t2 - t1).toFixed(4));
 
-    // console.log(plot_data.dataSet);
+    // // console.log(plot_data.dataSet);
 }
 
 // onclick callback
@@ -66,6 +83,9 @@ function graph_data_treeview_click(object, event_)
     msg = String(object.getAttribute('class')).substring(26);
     msg_type = String(object.id).substring(21 + msg.length);
 
+    if ([series_1.name(), series_2.name(), series_3.name(), series_4.name()].indexOf(msg_type) != -1 )
+        return;
+
     //override trace 
     plot_data.trace[plot_data.trace_num][0] = msg;
     plot_data.trace[plot_data.trace_num][1] = msg_type;
@@ -80,7 +100,7 @@ function graph_data_treeview_click(object, event_)
 
     // increment trace selectionner
     plot_data.trace_num++;
-    if (plot_data.trace_num>3) plot_data.trace_num=0;
+    if (plot_data.trace_num > 3) plot_data.trace_num=0;
 
     // sending order to change DATA PLOT
     $.send_data('PLOT_NEW_DATA', plot_data.trace);
@@ -232,16 +252,16 @@ $(document).ready(function()
             console.log('sent start sending data');
         }
 
-        if (plot_data.number >= 5)
-            plot_data.dataSet.remove(0);
-        else
-            plot_data.number += 1;
+        // if (plot_data.number >= 5)
+        //     plot_data.dataSet.remove(0);
+        // else
+        //     plot_data.number += 1;
 
-        plot_data.dataSet.append([String(test), (test), 
-                                                (test), 
-                                                (test),
-                                                (test)]);
-        test +=1;
+        // plot_data.dataSet.append([String(test), (test), 
+        //                                         (test), 
+        //                                         (test),
+        //                                         (test)]);
+        // test +=1;
 
     });
 });

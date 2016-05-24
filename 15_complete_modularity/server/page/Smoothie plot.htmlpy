@@ -1,0 +1,16 @@
+
+
+BOX:
+BOXHEAD:
+<h3 class="box-title">Smoothie plot</h3>
+BOXBODY:
+
+<button id="show_plot_btn" type="submit" class="btn btn-primary btn-sm">Play</button>
+<canvas id="mycanvas" width="700px" height="400"></canvas>
+
+
+BOXPARAM: column=left
+BOXFILE: smoothie_lib.js smoothie.js
+BOXCALLBACK:
+PLOT_DATA add_point_graph_smoothie
+PLOT_RATE smoothie_set_state
