@@ -24,27 +24,12 @@ msg_tab = {
     'SET_OBP'           : 107, # 2 values, the OBP (string) and the float value of the OBP to change
     'SWITCH_STATE'      : 108, # 1 value password if client want to become controller, or '' if client want to become observer
     'ASK_CLIENT_STATUS' : 109, # 1 value, ask what is the client status, nedd to transmit a code that will be returned
-    'MAVLINK_MESSAGE'   : 110, # 11 values of the mavlink message (see .message_factory.command_long_send? dronekit doc or below)
-    'MAVLINK_MSG_SHORT' : 111, # 9 values same as MAVLINK_MESSAGE but no need to specified the 2 first parameter, they are automatically set, see below
+    'MAVLINK_MESSAGE'   : 110, # see with julien
+    'MAVLINK_COMMAND'   : 111, # 9 values to send a mavlink command (see vehicle.message_factory.command_long_send? or dronekit doc or below)
     'GET_GRAPH_DATA'    : 112, # no value 
 }
 
-# MAVLINK_MESSAGE parameter:
-#  1: Target_system         (with MAVLINK_MSG_SHORT : set to the drone ID automatically)
-#  2: Target_component      (with MAVLINK_MSG_SHORT : set to 0 automatically)
-#  3: Command:              (it's a MAV_CMD enum, see below)
-#  4: Confirmation
-#  5: Parameter 1
-#  6: Parameter 2
-#  7: Parameter 3
-#  8: Parameter 4
-#  9: Parameter 5
-#  10: Parameter 6
-#  11: Parameter 7
-
-# MAVLINK_MSG parameter:
-#  Target_system is set to the drone ID automatically
-#  Target_component is set to 0 automatically
+# MAVLINK_COMMAND parameter:
 #  1: Command:              (it's a MAV_CMD enum, see below)
 #  2: Confirmation
 #  3: Parameter 1
@@ -54,6 +39,8 @@ msg_tab = {
 #  7: Parameter 5
 #  8: Parameter 6
 #  9: Parameter 7
+
+# MAVLINK_MESSAGE parameter:
 
 # MAV_CMD enum:
 # see complete list at  https://pixhawk.ethz.ch/mavlink/ 

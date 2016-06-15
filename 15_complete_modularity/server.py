@@ -57,18 +57,20 @@ def main():
                             'server.socket_port': 8080})
     
     print 'waiting for drone'
-    vehicle = dronekit.connect("udp:localhost:14550", rate=200, heartbeat_timeout=0)    # for local simulated drone
-    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)
+    # vehicle = dronekit.connect("udp:localhost:14550", rate=200, heartbeat_timeout=0)    # for local simulated drone
+    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)                       # for real drone
     print 'drone found, waiting ready'
-    vehicle.wait_ready()
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
+    # listening on the arm message
     vehicle.add_attribute_listener('armed', arm_callback)
+
+    # listening on all message (the call back is msg_handler)
     vehicle.add_message_listener('*', msg_handler)
 
+    # getting OnBoard parameters
     OBP_tab = sorted(vehicle.parameters.keys())
-
-    # test()    
+    
     threading.Timer(5, send_plot_message).start() # start in 5 seconds
 
     conf = {
@@ -93,6 +95,7 @@ def main():
     cherrypy.quickstart(Cherrypy_server(), '/', conf)
 
 
+# check if number is an integer
 def is_int(s):
     try: 
         int(s)
@@ -101,6 +104,7 @@ def is_int(s):
         return False
 
 
+# return the string json message with specific code and data, code must be in the hashtable of msg_tab
 def get_json_msg(code, data):
 
     if isinstance(data, list):
@@ -113,6 +117,7 @@ def get_json_msg(code, data):
         print 'error: data format is not an list', data
 
 
+# get the local IP adress, need to be connected to internet
 def getIpAdress():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("gmail.com", 80))
@@ -122,6 +127,7 @@ def getIpAdress():
     return ip
 
 
+# check internet connection
 def internet_on():
         try:
             response=urllib2.urlopen('http://gmail.com',timeout=1)
@@ -132,16 +138,12 @@ def internet_on():
         return False
 
 
+# call back that handle all the message from the drone
 def msg_handler(self, name, msg):
     new_time = time.time()
 
-    if name not in msg_listener:
-        print 'new entry:', name
+    if name not in msg_listener: #first time that we meet the message
         msg_listener[name] = [msg.to_dict(), 0, new_time]
-
-        # a = {el:msg_listener[el] for el in sorted(msg_listener.keys())}
-        # print 'sorted : ', a.keys(), '\nold:', msg_listener.keys(), '\n', a[name], '\n\n'
-
 
     else:
         freq = 1/(new_time - msg_listener[name][2])
@@ -149,34 +151,37 @@ def msg_handler(self, name, msg):
             msg_listener[name] = [msg.to_dict(),round(freq, 2), new_time]
 
 
+# send arm state to a client
 def send_arm_state(client='everyone'):
     global vehicle
     send_data('ARM_STATE', [vehicle.armed], client)
     print 'sent arm state:' + str(vehicle.armed)
 
 
+# send IP to the client
 def send_IP(client='everyone'):
     global IP_adr
     send_data('IP', [IP_adr + ":8080"], client)
     print 'sent IP to ', client
 
-# # def send_
+
+# send all the GRAPH DATA to all the client every 5 seconds
 def send_plot_message():
     send_data('GRAPH_DATA', [msg_listener])
     threading.Timer(5, send_plot_message).start() # every 5 seconds
 
 
+# debug function: display the entire huge hash table msg_listener every 2 seconds (need to be call in the main function)
 def test():
     testing_str = 'ATTITUDE'
 
     if testing_str in msg_listener:
         print get_json_msg('PLOT_DATA', [msg_listener]), '\n'
-        # print 'frequency:', msg_listener[testing_str][1], '\n'
 
     threading.Timer(2, test).start()
 
 
-
+# send data to a specified client, with a specified code and specified data
 def send_data(code, data, client='everyone'):
     if not isinstance(code, str):
         print 'code need to be a string'
@@ -208,8 +213,11 @@ def send_data(code, data, client='everyone'):
         return
 
 
+# ĉall back that handle arm every time the drone send its arm state
 def arm_callback(self, attr, m):
     send_arm_state()
+
+
 
 
 #   ### classes definition ###
@@ -218,34 +226,25 @@ class ClientWebPlugin(WebSocketPlugin):
     def __init__(self, bus):
         WebSocketPlugin.__init__(self, bus)
         self.clients = {}
-        # self.main_client_code = -1
+
 
     def start(self):
         WebSocketPlugin.start(self)
         self.bus.subscribe('add-client', self.add_client)
         self.bus.subscribe('get-client', self.get_client)
         self.bus.subscribe('del-client', self.del_client)
-        # self.bus.subscribe('get_main-client', self.get_main_client_num)
-        # self.bus.subscribe('switch-state', self.switch_state)
+
 
     def stop(self):
         WebSocketPlugin.stop(self)
         self.bus.unsubscribe('add-client', self.add_client)
         self.bus.unsubscribe('get-client', self.get_client)
         self.bus.unsubscribe('del-client', self.del_client)
-        # self.bus.unsubscribe('get_main-client', self.get_main_client_num)
-        # self.bus.unsubscribe('switch-state', self.switch_state)
+
 
     def add_client(self, client_code, websocket):
         self.clients[client_code] = websocket
 
-        # if self.main_client_code == -1:
-        #     self.main_client_code = client_code
-        #     self.clients[client_code].is_main_client = True
-        #     # send_data('SET_MAIN_CLIENT', [], self.main_client)
-        # else:
-        #     pass
-        #     # send_data('SET_OBSERVER', [], client_code)
 
     def get_client(self, client_code):
         try:
@@ -253,46 +252,9 @@ class ClientWebPlugin(WebSocketPlugin):
         except KeyError: #if there is no client 'client_code'
             return -1
 
+
     def del_client(self, client_code):
         del self.clients[client_code]
-
-        # if len(self.clients) == 0: # no client connected
-        #     self.main_client_code = -1
-        
-        # elif self.main_client_code == client_code: # some client remain and a new main has to be set
-        #     self.main_client_code = self.clients.itervalues().next().client_code
-        #     self.clients[self.main_client_code].is_main_client = True
-        #     send_data('SET_MAIN_CLIENT', [True], self.main_client_code)
-
-        # print "number of client remaining: ", len(self.clients), " main_client_code: ", self.main_client_code
-
-    # def get_main_client_num(self):
-    #     return self.main_client_code
-
-    # def switch_state(self, client_code):
-    #     if len(self.clients) <= 1:  # if 1 client or less, there is only one main and no observer obviously...
-    #         return -1
-
-    #     elif client_code == self.main_client_code: # if the guy want to stop being the main client 
-    #         for code_temp in self.clients: # search for an available client to switch statuts with
-    #             if code_temp == self.main_client_code:
-    #                 continue
-    #             else:
-    #                 break
-
-    #         self.main_client_code = code_temp
-    #         self.clients[client_code].is_main_client = False
-    #         self.clients[self.main_client_code].is_main_client = True
-    #         return self.main_client_code #return the new main client
-
-    #     else: # if the guy want to be the main and the main client confirmed ! 
-    #         temp = self.main_client_code
-    #         self.clients[self.main_client_code].is_main_client = False
-    #         self.clients[client_code].is_main_client = True
-    #         self.main_client_code = client_code
-    #         return temp #return the old main client
-
-    #     return -1 # if for any raison we come here, it must be a failure
 
 
 class WebSocketHandler(WebSocket):
@@ -308,7 +270,7 @@ class WebSocketHandler(WebSocket):
             'data' : [ ['ATTITUDE', 'pitch'], 
                        ['ATTITUDE', 'roll'], 
                        ['ATTITUDE', 'yaw'], 
-                       ['GLOBAL_POSITION_INT', 'alt'] ],  # this field contain which value to send for the plot
+                       ['ATTITUDE', 'pitchspeed'] ],  # this field contain which value to send for the plot
             'rate' : 0.080
         }
 
@@ -317,17 +279,18 @@ class WebSocketHandler(WebSocket):
             'rate' : 1.000
         }
 
+
+    # every time a message is received from a client, this function is called
     def received_message(self, m):
+        # decrypt json format
         msg = json.loads(m.data)
 
         code = msg['code']
         data = msg['data']
 
-        # print 'check status:', code in msg_tab
 
         if code in msg_tab_inv:
             print 'receive command:', msg_tab_inv[code], 'from client number', self.client_code
-
 
         global vehicle
 
@@ -346,13 +309,13 @@ class WebSocketHandler(WebSocket):
             vehicle.armed = isarmed
             vehicle.commands.upload()
 
-            # waiting during 5 seconds for chagement of arm state
+            # waiting during 4 seconds for chagement of arm state
             t1 = time.time()
-            while vehicle.armed != isarmed and time.time() - t1 < 5:
+            while vehicle.armed != isarmed and time.time() - t1 < 4:
                 pass
 
             if vehicle.armed != isarmed:
-                print 'error : cannot change arm state, timout after 5 seconds'
+                print 'error : cannot change arm state, timout after 4 seconds'
                 send_arm_state()
 
         elif code == msg_tab['GET_IP']:
@@ -398,7 +361,6 @@ class WebSocketHandler(WebSocket):
                 send_data('OBP_VALUE', [ data[0], vehicle.parameters[data[0]] ], self.client_code)
 
         elif code == msg_tab['SET_OBP']:
-            # global OBP_tab
 
             id_str = str(data[0])
             try:
@@ -424,9 +386,7 @@ class WebSocketHandler(WebSocket):
                 if vehicle.parameters[id_str] != value:
                     print 'failed to change parameter ', id_str
 
-
         elif code == msg_tab['SWITCH_STATE']:
-            # print 'receive SWITCH order from', self.client_code, ' status: ', self.is_main_client
 
             if self.is_main_client:
                 self.is_main_client = False
@@ -442,39 +402,30 @@ class WebSocketHandler(WebSocket):
         elif code == msg_tab['ASK_CLIENT_STATUS']:
             self.send_client_status()
 
-        elif code == msg_tab['MAVLINK_MESSAGE']:
+        elif code == msg_tab['MAVLINK_COMMAND'] or code == msg_tab['MAVLINK_MESSAGE']:
+            print 'here fine'
             if self.is_main_client:
-
-                if data[2] in MAV_CMD:
-                    data[2] = MAV_CMD[data[2]]
-
-                elif not is_int(data[2]):
-                    return
-
-                vehicle.message_factory.command_long_send(int(data[0]), int(data[1]), int(data[2]), int(data[3]), float(data[4]), float(data[5]), 
-                                                          float(data[6]), float(data[7]), float(data[8]), float(data[9]), float(data[10]))
-                vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
-                send_data('MAV_MSG_CONF', [])
-            else:
-                pass #just ignore
-
-        elif code == msg_tab['MAVLINK_MSG_SHORT']:
-            if self.is_main_client:
+                print 'here fine'
                 if data[0] in MAV_CMD:
                     data[0] = MAV_CMD[data[0]]
+
+                    print 'here fine:', data[0]
 
                 elif not is_int(data[0]):
                     return
 
-                target = 0 # TODO:change that to the ID of the drone
-
-                vehicle.message_factory.command_long_send(target, 0, int(data[0]), int(data[1]), int(data[2]), int(data[3]), 
+                # first parameter is the drone target, but dronekit automaticaly correct it
+                vehicle.message_factory.command_long_send(0, 0, int(data[0]), int(data[1]), int(data[2]), int(data[3]), 
                                                           float(data[4]), float(data[5]), float(data[6]), float(data[7]), float(data[8]))
 
                 vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
                 send_data('MAV_MSG_CONF', [])
             else:
-                pass #just ignore
+                send_client_status()
+
+        #elif code == msg_tab['MAVLINK_MESSAGE']:
+        #    pass
+            # for now, MAVLINK_MESSAGE and MAVLINK_COMMAND do the same thing
 
         elif code == msg_tab['GET_GRAPH_DATA']:
             send_data('GRAPH_DATA', [msg_listener], self.client_code)
@@ -489,15 +440,8 @@ class WebSocketHandler(WebSocket):
         else:
             self.send(get_json_msg('SET_OBSERVER', [alert]));
 
-        # if other_client_id >= 0:
-        #     main_id = cherrypy.engine.publish('get_main-client').pop()
 
-        #     if other_client_id == main_id:
-        #         send_data('SET_MAIN_CLIENT', [alert], other_client_id)
-        #     else:
-        #         send_data('SET_OBSERVER', [alert], other_client_id)
-
-
+    # manage the sending of the plot data every x seconds (usually x = 100ms)
     def send_plot_data(self):
 
         if self.plot['current_state'] and self.terminated == False:
@@ -517,6 +461,7 @@ class WebSocketHandler(WebSocket):
             print 'stop sending plot data'
 
 
+    # manage the sending of the location every x seconds (usually x = 1s)
     def send_location(self, once=False):
         global vehicle
 
@@ -535,7 +480,10 @@ class WebSocketHandler(WebSocket):
     def closed(self, code, reason="A client left the room without a proper explanation."):
         print 'deconnexion of a client, reason :', reason
         cherrypy.engine.publish('del-client', self.client_code)
+
+        #stop sending recursively data
         self.plot['current_state'] = False
+        self.location['current_state'] = False
 
 
 class Cherrypy_server(object):
@@ -543,9 +491,7 @@ class Cherrypy_server(object):
     @cherrypy.expose
     def index(self):
         global IP_adr
-        global number_of_client
-        number_of_client += 1
-        # return file('public/index.html', 'r').read().format('ws://' + IP_adr + ':8080/ws', '%', '{', '}')
+
         return get_html_code('ws://' + IP_adr + ':8080/ws')
 
     @cherrypy.expose
@@ -555,3 +501,17 @@ class Cherrypy_server(object):
 
 if __name__ == '__main__':
     main()
+
+###
+# filename : server.py
+# 
+# description: handle the server stuff in a ground control station. Handle the communication with one drone using
+#   MAVLink message (dronekit library used) and the communication with many client (host a server using cherryPy) 
+#   send message using ws4py WebSocket protocol.
+#
+# Work made at the Labotory of Inteligent System at EPFL.
+#
+# Autor : Stéphane Ballmer
+#
+# Last change: 15/06/2016
+###

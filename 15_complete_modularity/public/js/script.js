@@ -1,4 +1,19 @@
 
+// // //
+//
+// filename : script.js
+// 
+// description: handle the display of a ground control station client communicating with its server using WebSocket protocol
+//
+// Work made at the Labotory of Inteligent System at EPFL.
+//
+// Autor : Stéphane Ballmer
+//
+// Last change: 15/06/2016
+//
+// // //
+
+
 function boxClick(object)
 {
     var id = 'BOX_' + String(object.id).substring(12);
@@ -6,11 +21,14 @@ function boxClick(object)
     document.getElementById(id).style.display = 'block';
 }
 
+var ws = new WebSocket(wr_adr);
+
 $(document).ready(function() 
 {
-    var ws = new WebSocket(wr_adr);
+    
     var main = false;
 
+    // when the client is closed
     window.onbeforeunload = function(e) 
     {
         ws.close(1000, "someone left the room");
@@ -20,6 +38,7 @@ $(document).ready(function()
         e.preventDefault();
     };
 
+    // when receiving a message from the server, this function is called
     ws.onmessage = function (evt)
     {
         var msg = JSON.parse(evt.data);
@@ -71,13 +90,15 @@ $(document).ready(function()
         if (! (msg.code in reverse_msg_tab) )
             console.log("got unknown message: " + evt.data);
 
+        // calling all the call back function corresponding to the code of the received message
         for (i in call_back_tab[msg.code])
         {   
             call_back_tab[msg.code][i] (reverse_msg_tab[msg.code], msg.data);
         }
     };
 
-    ws.onopen = function() //when the client boot
+    //when the client boot
+    ws.onopen = function() 
     {
         var msg = {code : 0, data:[]};
 
@@ -94,7 +115,8 @@ $(document).ready(function()
         $.send_data('ASK_CLIENT_STATUS', []);
     };
 
-    ws.onclose = function(evt) //when the client is closing
+    //when the client is closing
+    ws.onclose = function(evt)
     {
         // empty
     };

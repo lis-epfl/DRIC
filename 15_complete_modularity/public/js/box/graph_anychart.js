@@ -8,7 +8,7 @@ var plot_data =
     trace       : [ ['ATTITUDE', 'pitch'], 
                     ['ATTITUDE', 'roll'], 
                     ['ATTITUDE', 'yaw'], 
-                    ['GLOBAL_POSITION_INT', 'alt'] ],
+                    ['ATTITUDE', 'pitchspeed'] ],
     trace_num   : 0,
 }
 
@@ -210,7 +210,7 @@ function initAnyChart()
 
     // create fourth series with mapped data
     series_4 = chart.line(plot_data.dataSet.mapAs({x: [0], value: [4]}));
-    series_4.name('alt');
+    series_4.name('pitchspeed');
     series_4.hoverMarkers().enabled(true).type('circle').size(4);
     series_4.tooltip().position('right').anchor('left').offsetX(5).offsetY(5);
 

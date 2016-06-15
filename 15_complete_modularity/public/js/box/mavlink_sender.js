@@ -3,9 +3,7 @@ $(document).ready(function()
 {
 	$("#send_mav_btn").click(function()
 	{
-	    $.send_data('MAVLINK_MESSAGE', [
-	        document.getElementById('inp_mav_target_system').value,
-	        document.getElementById('inp_mav_target_component').value,
+	    $.send_data('MAVLINK_COMMAND', [
 	        document.getElementById('inp_mav_command').value,
 	        document.getElementById('inp_mav_confirmation').value,
 	        document.getElementById('inp_mav_param1').value,

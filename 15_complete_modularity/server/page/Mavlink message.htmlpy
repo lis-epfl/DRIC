@@ -1,26 +1,16 @@
 BOX:
 BOXHEAD:
-<h3 class="box-title">Mavlink message sender</h3>
-<div class="alert alert-info" style="visibility:hidden;width:165px;display:inline;" id="alert_receive_mav"><i class="icon fa fa-info"></i>Change received</div>
+<h3 class="box-title">Mavlink command sender</h3>
+<div class="alert alert-info" style="visibility:hiddent;width:150px;display:inline;" id="alert_receive_mav"><i class="icon fa fa-info"></i>Command received</div>
 
 BOXBODY:
 
-<a href="https://pixhawk.ethz.ch/mavlink/">See Complete list of MAV_CMD</a>
+<a target="_blank" href="https://pixhawk.ethz.ch/mavlink/">See Complete list of MAV_CMD</a>
 <div style="overflow-x:auto;overflow-y:auto;height: 250px;">
 
 <table id="Mav_table" class="table table-bordered table-striped" style="color:black;">
 
   <tbody>
-
-    <tr>
-    	<td><h5>Target_system</h5></td>
-    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_target_system"></td>
-    </tr>
-
-    <tr>
-    	<td><h5>Target_component</h5></td>
-    	<td><input type="text" class="input_tab_Mav" value="0" id="inp_mav_target_component"></td>
-    </tr>  <!-- if Traget Component = 'ALL' or 'all', send a 0 -->
 
     <tr>
     	<td><h5>Command (MAV_CMD enum)</h5></td>

@@ -1,0 +1,17 @@
+
+BOX:
+
+BOXHEAD: style="color:green;"
+
+This text will be displayed in green in the head
+
+BOXBODY: style="color:red;"
+This text will be displayed in red in the body followed by a button <br>
+<button style="height:40px;width:100px;color:black">Click on me
+
+BOXPARAM: column=left
+BOXFILE:
+BOXCALLBACK:
+
+
+

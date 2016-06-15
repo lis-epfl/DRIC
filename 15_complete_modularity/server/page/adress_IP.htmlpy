@@ -1,0 +1,12 @@
+BOX:
+
+BOXHEAD:
+IP adress
+
+BOXBODY: id="box_IP_ADRESS"
+IP adress: 
+
+BOXPARAM: column=left
+BOXFILE: ip_box.js
+BOXCALLBACK: 
+IP IP_callback_presentation
