@@ -253,3 +253,14 @@ def get_list_of_htmlpy_file():
     # capture a list of all the file .htmlpy and cut the 'page/''
     return [re.sub('server/page/', '', i) for i in glob.glob('server/page/*.htmlpy')]
 
+###
+# filename : html_maker.py
+# 
+# description: decrypt htmlpy file format and generate html for the client
+#
+# Work made at the Labotory of Inteligent System at EPFL.
+#
+# Autor : Stéphane Ballmer
+#
+# Last change: 15/06/2016
+###
