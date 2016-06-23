@@ -48,11 +48,11 @@ def get_html_code(adr):
     ret = file('server/page/part0.html', 'r').read()
 
     #insert css files
-    ret += '\n\n' 
-    for element in element_css:  
+    ret += '\n\n'
+    for element in element_css:
         ret+='<link href="/static/css/box/' + element + '" rel="stylesheet">'
         ret+='\n'
-    ret += '\n\n' 
+    ret += '\n\n'
 
     # read part1
     ret += file('server/page/part1.html', 'r').read().format(adr)
@@ -77,7 +77,7 @@ def get_html_code(adr):
     for element in element_js:
         ret+='<script src="/static/js/box/' + element + '"></script>'
         ret+='\n'
-    ret += '\n\n'  
+    ret += '\n\n'
 
     # insert js call-back script
     ret += """<script>\nvar call_back_tab = {\n"""
@@ -118,15 +118,15 @@ def get_html_code(adr):
     ret += file('server/page/part4.html', 'r').read()
 
     #insert box of the right column
-    ret += '\n\n' 
+    ret += '\n\n'
     for element in element_right:
         ret += element
         ret += '\n'
-    ret += '\n\n' 
+    ret += '\n\n'
 
     # read part5
     ret += file('server/page/part5.html', 'r').read()
-    ret += '\n' 
+    ret += '\n'
 
     return ret
 
@@ -169,7 +169,7 @@ def get_html_from_file(file_):
     while lines[i][:8] != 'BOXBODY:':
         result+= ' ' + lines[i] + '\n'
         i+=1
- 
+
 
     # adding lines and body parameter
     result += """
@@ -255,12 +255,12 @@ def get_list_of_htmlpy_file():
 
 ###
 # filename : html_maker.py
-# 
+#
 # description: decrypt htmlpy file format and generate html for the client
 #
 # Work made at the Labotory of Inteligent System at EPFL.
 #
-# Autor : Stéphane Ballmer
+# Autor : Stephane Ballmer
 #
 # Last change: 15/06/2016
 ###

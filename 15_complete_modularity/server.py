@@ -55,10 +55,10 @@ def main():
 
     cherrypy.config.update({'server.socket_host': IP_adr,
                             'server.socket_port': 8080})
-    
+
     print 'waiting for drone'
-    # vehicle = dronekit.connect("udp:localhost:14550", rate=200, heartbeat_timeout=0)    # for local simulated drone
-    vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)                       # for real drone
+    vehicle = dronekit.connect("udp:localhost:14550", rate=200, heartbeat_timeout=0)    # for local simulated drone
+    # vehicle = dronekit.connect('/dev/ttyUSB0', baud=57600, rate=20)                       # for real drone
     print 'drone found, waiting ready'
     # vehicle.parameters['COM_RC_IN_MODE'] = 2;
 
@@ -70,7 +70,7 @@ def main():
 
     # getting OnBoard parameters
     OBP_tab = sorted(vehicle.parameters.keys())
-    
+
     threading.Timer(5, send_plot_message).start() # start in 5 seconds
 
     conf = {
@@ -97,7 +97,7 @@ def main():
 
 # check if number is an integer
 def is_int(s):
-    try: 
+    try:
         int(s)
         return True
     except ValueError:
@@ -213,7 +213,7 @@ def send_data(code, data, client='everyone'):
         return
 
 
-# ĉall back that handle arm every time the drone send its arm state
+# call back that handle arm every time the drone send its arm state
 def arm_callback(self, attr, m):
     send_arm_state()
 
@@ -267,9 +267,9 @@ class WebSocketHandler(WebSocket):
 
         self.plot = {
             'current_state' : False,
-            'data' : [ ['ATTITUDE', 'pitch'], 
-                       ['ATTITUDE', 'roll'], 
-                       ['ATTITUDE', 'yaw'], 
+            'data' : [ ['ATTITUDE', 'pitch'],
+                       ['ATTITUDE', 'roll'],
+                       ['ATTITUDE', 'yaw'],
                        ['ATTITUDE', 'pitchspeed'] ],  # this field contain which value to send for the plot
             'rate' : 0.080
         }
@@ -348,7 +348,7 @@ class WebSocketHandler(WebSocket):
                 self.location['current_state'] = True
                 self.location['rate'] = data[0]
                 self.send_location()
-                
+
             else:
                 self.location['current_state'] = False
                 self.send_location(True)
@@ -391,7 +391,7 @@ class WebSocketHandler(WebSocket):
             if self.is_main_client:
                 self.is_main_client = False
                 self.send_client_status(True)
-                
+
             elif data[0] in password:
                 self.is_main_client = True
                 self.send_client_status(True)
@@ -415,7 +415,7 @@ class WebSocketHandler(WebSocket):
                     return
 
                 # first parameter is the drone target, but dronekit automaticaly correct it
-                vehicle.message_factory.command_long_send(0, 0, int(data[0]), int(data[1]), int(data[2]), int(data[3]), 
+                vehicle.message_factory.command_long_send(0, 0, int(data[0]), int(data[1]), int(data[2]), int(data[3]),
                                                           float(data[4]), float(data[5]), float(data[6]), float(data[7]), float(data[8]))
 
                 vehicle.commands.upload() # after this, "any writes are guaranteed to have completed"
@@ -431,7 +431,7 @@ class WebSocketHandler(WebSocket):
             send_data('GRAPH_DATA', [msg_listener], self.client_code)
 
         else:
-            print 'receive unknown message :' + m.data 
+            print 'receive unknown message :' + m.data
 
 
     def send_client_status(self, alert = False):
@@ -447,9 +447,9 @@ class WebSocketHandler(WebSocket):
         if self.plot['current_state'] and self.terminated == False:
             global vehicle
 
-            json_msg = get_json_msg('PLOT_DATA',[msg_listener[self.plot['data'][0][0]][0][self.plot['data'][0][1]], 
-                                                 msg_listener[self.plot['data'][1][0]][0][self.plot['data'][1][1]], 
-                                                 msg_listener[self.plot['data'][2][0]][0][self.plot['data'][2][1]], 
+            json_msg = get_json_msg('PLOT_DATA',[msg_listener[self.plot['data'][0][0]][0][self.plot['data'][0][1]],
+                                                 msg_listener[self.plot['data'][1][0]][0][self.plot['data'][1][1]],
+                                                 msg_listener[self.plot['data'][2][0]][0][self.plot['data'][2][1]],
                                                  msg_listener[self.plot['data'][3][0]][0][self.plot['data'][3][1]]])
             self.send(json_msg)
 
@@ -504,14 +504,14 @@ if __name__ == '__main__':
 
 ###
 # filename : server.py
-# 
+#
 # description: handle the server stuff in a ground control station. Handle the communication with one drone using
-#   MAVLink message (dronekit library used) and the communication with many client (host a server using cherryPy) 
+#   MAVLink message (dronekit library used) and the communication with many client (host a server using cherryPy)
 #   send message using ws4py WebSocket protocol.
 #
 # Work made at the Labotory of Inteligent System at EPFL.
 #
-# Autor : Stéphane Ballmer
+# Autor : Stephane Ballmer
 #
 # Last change: 15/06/2016
 ###
